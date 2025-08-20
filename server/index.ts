@@ -1,6 +1,24 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes.js";
-import { setupVite, serveStatic, log } from "./vite.js";
+
+// Only import Vite in development
+let setupVite: any, serveStatic: any, log: any;
+if (process.env.NODE_ENV === "development") {
+  const viteModule = await import("./vite.js");
+  setupVite = viteModule.setupVite;
+  serveStatic = viteModule.serveStatic;
+  log = viteModule.log;
+} else {
+  // Production fallbacks
+  log = (message: string) => console.log(message);
+  serveStatic = (app: any) => {
+    // Simple static file serving for production
+    app.use(express.static("dist/public"));
+    app.use("*", (_req: any, res: any) => {
+      res.sendFile("dist/public/index.html", { root: "." });
+    });
+  };
+}
 
 const app = express();
 app.use(express.json());
