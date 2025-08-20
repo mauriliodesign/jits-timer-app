@@ -7,7 +7,12 @@ export function requireAuth(req: Request, res: Response, next: NextFunction) {
     return next();
   }
 
-  // Em produção, verificar se há um userId válido
+  // Em produção, permitir acesso para APIs de timer (são públicas)
+  if (req.path.startsWith('/api/timer/')) {
+    return next();
+  }
+
+  // Para outras APIs, verificar se há um userId válido
   const userId = req.params.userId || req.body.userId;
   
   if (!userId) {
