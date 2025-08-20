@@ -48,7 +48,11 @@ export default function MobileControl() {
 
   // Função para determinar se o treino foi iniciado
   const isTrainingStarted = () => {
-    return currentSession && (currentSession.isRunning || currentSession.currentTime > 0);
+    return currentSession && (
+      currentSession.isRunning || 
+      getSafeValue(currentSession.currentTime, 0) > 0 ||
+      getSafeValue(currentSession.currentRound, 1) > 1
+    );
   };
 
   // Função para obter o tempo padrão baseado na configuração
@@ -454,19 +458,26 @@ export default function MobileControl() {
           {/* Main Control Button - Iniciar/Pausar/Continuar */}
           <Button
             onClick={() => {
-              if (currentSession && !currentSession.isRunning && currentSession.currentTime === 0) {
+              if (!currentSession) return;
+              
+              const currentTime = getSafeValue(currentSession.currentTime, 0);
+              const isRunning = currentSession.isRunning;
+              
+              if (!isRunning && currentTime === 0) {
                 // Estado inicial: Iniciar Treino
-                applyConfig();
-                handleControl("start");
-              } else if (currentSession && currentSession.isRunning) {
+                if (isConfigComplete()) {
+                  applyConfig();
+                  handleControl("start");
+                }
+              } else if (isRunning) {
                 // Treino rodando: Pausar Treino
                 handleControl("pause");
-              } else if (currentSession && !currentSession.isRunning && currentSession.currentTime > 0) {
+              } else if (!isRunning && currentTime > 0) {
                 // Treino pausado: Continuar Treino
                 handleControl("start");
               }
             }}
-            disabled={!currentSession || !isConfigComplete() || configMutation.isPending || controlMutation.isPending}
+            disabled={!currentSession || (!isConfigComplete() && !isTrainingStarted()) || configMutation.isPending || controlMutation.isPending}
             className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {!currentSession ? (
@@ -474,12 +485,12 @@ export default function MobileControl() {
                 <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
                 Carregando...
               </>
-            ) : currentSession.isRunning ? (
+            ) : getSafeValue(currentSession.isRunning, false) ? (
               <>
                 <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
                 Pausar Treino
               </>
-            ) : currentSession.currentTime > 0 ? (
+            ) : getSafeValue(currentSession.currentTime, 0) > 0 ? (
               <>
                 <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
                 Continuar Treino
