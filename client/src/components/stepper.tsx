@@ -118,7 +118,7 @@ export const Stepper: React.FC<StepperProps> = ({
   };
 
   // Display value
-  const displayValue = showValue ? value : placeholder;
+  const displayValue = showValue && value > 0 ? value : placeholder;
   const displayLabel = customLabels.label || label;
 
   // Check limits

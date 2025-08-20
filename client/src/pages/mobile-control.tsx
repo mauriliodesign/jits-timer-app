@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { PrimaryLargeButton, SecondaryLargeButton } from "@/components/ui/button-system";
 import { Play, Pause, Square, Settings, Timer, Wifi, Users, RotateCcw, Monitor } from "lucide-react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { formatTime, calculateTotalTime } from "@/lib/timer-utils";
@@ -227,23 +227,15 @@ export default function MobileControl() {
     previousStateRef.current = curr;
   }, [timerState]);
 
-  const handleConfigChange = (field: keyof typeof config, delta: number) => {
+  const handleConfigChange = (field: keyof typeof config, newValue: number) => {
     const limits = CONFIG_LIMITS[field];
-    let currentValue = configChanged[field] ? config[field] : limits.min;
-    
-    // Se o campo não foi alterado ainda, começar com o valor mínimo
-    if (!configChanged[field]) {
-      currentValue = limits.min;
-    } else {
-      currentValue = config[field];
-    }
     
     // Calcular novo valor respeitando os limites
-    const newValue = Math.max(limits.min, Math.min(limits.max, currentValue + delta));
+    const clampedValue = Math.max(limits.min, Math.min(limits.max, newValue));
     
     const newConfig = {
       ...config,
-      [field]: newValue,
+      [field]: clampedValue,
     };
     setConfig(newConfig);
     
@@ -341,14 +333,14 @@ export default function MobileControl() {
             
             {/* Number of Rounds */}
             <Stepper
-              value={config.rounds}
-              onValueChange={(value) => handleConfigChange("rounds", value - config.rounds)}
+              value={configChanged.rounds ? config.rounds : 0}
+              onValueChange={(value) => handleConfigChange("rounds", value)}
               min={CONFIG_LIMITS.rounds.min}
               max={CONFIG_LIMITS.rounds.max}
               step={1}
               size="large"
               variant="minimal"
-              showValue={configChanged.rounds}
+              showValue={true}
               placeholder="—"
               label="Número de Rolas"
               className="section-spacing-compact"
@@ -356,14 +348,14 @@ export default function MobileControl() {
 
             {/* Round Duration */}
             <Stepper
-              value={config.roundDuration}
-              onValueChange={(value) => handleConfigChange("roundDuration", value - config.roundDuration)}
+              value={configChanged.roundDuration ? config.roundDuration : 0}
+              onValueChange={(value) => handleConfigChange("roundDuration", value)}
               min={CONFIG_LIMITS.roundDuration.min}
               max={CONFIG_LIMITS.roundDuration.max}
               step={1}
               size="large"
               variant="minimal"
-              showValue={configChanged.roundDuration}
+              showValue={true}
               placeholder="—"
               label="Duração da Rola (minutos)"
               className="section-spacing-compact"
@@ -371,14 +363,14 @@ export default function MobileControl() {
 
             {/* Rest Time */}
             <Stepper
-              value={config.restTime}
-              onValueChange={(value) => handleConfigChange("restTime", value - config.restTime)}
+              value={configChanged.restTime ? config.restTime : 0}
+              onValueChange={(value) => handleConfigChange("restTime", value)}
               min={CONFIG_LIMITS.restTime.min}
               max={CONFIG_LIMITS.restTime.max}
               step={5}
               size="large"
               variant="minimal"
-              showValue={configChanged.restTime}
+              showValue={true}
               placeholder="—"
               label="Tempo de Descanso (segundos)"
               className="section-spacing-compact"
@@ -399,13 +391,13 @@ export default function MobileControl() {
             
             {/* Quick Actions */}
             <div className="space-y-3">
-              <Button
+              <SecondaryLargeButton
                 onClick={() => window.open('/tv', '_blank')}
-                className="w-full h-12 lg:h-14 bg-white/8 hover:bg-white/16 text-sm lg:text-base font-medium rounded-xl border border-white/20"
+                icon={<Monitor />}
+                fullWidth
               >
-                <Monitor className="mr-2 h-4 w-4 lg:h-5 lg:w-5" />
                 Abrir Tela da TV
-              </Button>
+              </SecondaryLargeButton>
             </div>
           </div>
         </div>
@@ -413,7 +405,7 @@ export default function MobileControl() {
         {/* Control Buttons */}
         <div className="grid-controls section-spacing">
           {/* Main Control Button - Iniciar/Pausar/Continuar */}
-          <Button
+          <PrimaryLargeButton
             onClick={() => {
               if (!currentSession) return;
               
@@ -435,43 +427,41 @@ export default function MobileControl() {
               }
             }}
             disabled={!currentSession || (!isConfigComplete() && !isTrainingStarted()) || configMutation.isPending || controlMutation.isPending}
-            className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={configMutation.isPending || controlMutation.isPending}
+            icon={
+              !currentSession ? (
+                <Play />
+              ) : getSafeValue(currentSession.isRunning, false) ? (
+                <Pause />
+              ) : (
+                <Play />
+              )
+            }
+            fullWidth
           >
             {!currentSession ? (
-              <>
-                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Carregando...
-              </>
+              "Carregando..."
             ) : getSafeValue(currentSession.isRunning, false) ? (
-              <>
-                <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Pausar Treino
-              </>
+              "Pausar Treino"
             ) : getSafeValue(currentSession.currentTime, 0) > 0 ? (
-              <>
-                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Continuar Treino
-              </>
+              "Continuar Treino"
             ) : (
-              <>
-                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Iniciar Treino
-              </>
+              "Iniciar Treino"
             )}
-          </Button>
+          </PrimaryLargeButton>
           
           {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
-          <Button
+          <SecondaryLargeButton
             onClick={() => {
               handleControl("reset");
               resetAll();
             }}
             disabled={!currentSession || controlMutation.isPending}
-            className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+            loading={controlMutation.isPending}
+            icon={<RotateCcw />}
           >
-            <RotateCcw className="mr-2 h-5 w-5" />
             Resetar
-          </Button>
+          </SecondaryLargeButton>
         </div>
 
         {/* Clock Display */}
