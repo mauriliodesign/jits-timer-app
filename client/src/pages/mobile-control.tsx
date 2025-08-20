@@ -25,6 +25,12 @@ export default function MobileControl() {
     restTime: 60,
   });
 
+  const [configChanged, setConfigChanged] = useState({
+    rounds: false,
+    roundDuration: false,
+    restTime: false,
+  });
+
   // Função para garantir valores padrão e evitar valores vazios
   const getSafeValue = (value: any, defaultValue: number) => {
     if (value === null || value === undefined || value === '' || isNaN(value)) {
@@ -176,6 +182,12 @@ export default function MobileControl() {
       [field]: newValue,
     };
     setConfig(newConfig);
+    
+    // Marcar que este campo foi alterado
+    setConfigChanged(prev => ({
+      ...prev,
+      [field]: true,
+    }));
   };
 
   const applyConfig = () => {
@@ -225,24 +237,24 @@ export default function MobileControl() {
         <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
           <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
             <div>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
+              <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Rola Atual</div>
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {currentSession ? getSafeValue(currentSession.currentRound, 1) : 1}
               </div>
-              <div className="text-xs sm:text-sm text-[#4a4a4f]">Rola Atual</div>
             </div>
             <div>
+              <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">
+                {currentSession?.isResting ? "Descanso" : "Tempo"}
+              </div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {currentSession ? formatTime(getSafeValue(currentSession.currentTime, 0)) : "00:00"}
               </div>
-              <div className="text-xs sm:text-sm text-[#4a4a4f]">
-                {currentSession?.isResting ? "Descanso" : "Tempo"}
-              </div>
             </div>
             <div>
-              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
+              <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Total</div>
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {currentSession ? getSafeValue(currentSession.rounds, 5) : 5}
               </div>
-              <div className="text-xs sm:text-sm text-[#4a4a4f]">Total</div>
             </div>
           </div>
         </div>
@@ -268,7 +280,9 @@ export default function MobileControl() {
                   <Minus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-10 sm:w-12 lg:w-16 text-center">
-                  <span className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono">{config.rounds}</span>
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono">
+                    {configChanged.rounds ? config.rounds : "—"}
+                  </span>
                 </div>
                 <Button
                   variant="outline"
@@ -294,7 +308,9 @@ export default function MobileControl() {
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-12 lg:w-16 text-center">
-                  <span className="text-2xl lg:text-3xl font-bold font-mono">{config.roundDuration}</span>
+                  <span className="text-2xl lg:text-3xl font-bold font-mono">
+                    {configChanged.roundDuration ? config.roundDuration : "—"}
+                  </span>
                 </div>
                 <Button
                   variant="outline"
@@ -320,7 +336,9 @@ export default function MobileControl() {
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-12 lg:w-16 text-center">
-                  <span className="text-2xl lg:text-3xl font-bold font-mono">{config.restTime}</span>
+                  <span className="text-2xl lg:text-3xl font-bold font-mono">
+                    {configChanged.restTime ? config.restTime : "—"}
+                  </span>
                 </div>
                 <Button
                   variant="outline"
@@ -385,7 +403,7 @@ export default function MobileControl() {
                 <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
                 Pausar o Treino
               </>
-            ) : getSafeValue(currentSession.currentRound, 1) > 1 ? (
+            ) : currentSession.currentTime > 0 ? (
               <>
                 <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
                 Continuar
