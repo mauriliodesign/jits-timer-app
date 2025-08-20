@@ -1,4 +1,4 @@
-import { type TimerSession, type InsertTimerSession, type AcademyProfile, type InsertAcademyProfile } from "@shared/schema";
+import { type TimerSession, type InsertTimerSession, type AcademyProfile, type InsertAcademyProfile } from "../shared/schema.js";
 import { randomUUID } from "crypto";
 
 // Always use Firebase storage

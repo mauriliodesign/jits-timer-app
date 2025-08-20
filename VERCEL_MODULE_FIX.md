@@ -91,24 +91,30 @@ await build({
 - ❌ **Antes:** `import { ... } from "./routes"`
 - ✅ **Depois:** `import { ... } from "./routes.js"`
 
-### **3. Firebase do Servidor**
+### **3. Correção dos Imports @shared**
+
+- ❌ **Antes:** `import { ... } from "@shared/schema"`
+- ✅ **Depois:** `import { ... } from "../shared/schema.js"`
+
+### **4. Firebase do Servidor**
 
 - ✅ Criado `server/firebase.ts` específico para servidor
 - ✅ Usa `process.env` em vez de `import.meta.env`
 - ✅ Separado do Firebase do cliente
 
-### **4. Alias de Módulos**
+### **5. Imports de Módulos Corrigidos**
 
-- ✅ Adicionado alias `@shared` no esbuild
-- ✅ Resolve `@shared/schema` para `./shared/schema`
-- ✅ Módulos compartilhados incluídos no bundle
+- ❌ **Antes:** `import { ... } from "@shared/schema"`
+- ✅ **Depois:** `import { ... } from "../shared/schema.js"`
+- ✅ Caminhos relativos diretos em vez de alias
+- ✅ Extensões `.js` obrigatórias para ESM
 
-### **5. Mudanças Principais**
+### **6. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **6. Módulos Incluídos no Bundle**
+### **7. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
@@ -117,7 +123,7 @@ await build({
 - ✅ `server/middleware/auth.ts`
 - ✅ `shared/schema.ts`
 
-### **7. Módulos Excluídos do Bundle**
+### **8. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
@@ -143,9 +149,12 @@ curl -s http://localhost:3001/api/timer/config
 curl -X POST http://localhost:3001/api/timer/config
 # Retorna erro de autenticação (esperado)
 
-# Verificação do alias:
+# Verificação dos imports:
 grep -n "shared/schema" dist/index.js
 # 7548:// shared/schema.ts
+
+grep -n "@shared/schema" dist/index.js
+# (não encontrado - corrigido)
 ```
 
 ### **Deploy Vercel:**
