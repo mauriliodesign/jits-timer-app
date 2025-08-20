@@ -3,7 +3,7 @@
 echo "🧪 Testando aplicação em produção..."
 
 # URL da aplicação
-URL="https://jits-1t8b85yb2-maurilios-projects-67760c0e.vercel.app"
+URL="https://jits-706sbglqk-maurilios-projects-67760c0e.vercel.app"
 
 echo "📱 URL: $URL"
 
