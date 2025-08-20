@@ -1,9 +1,9 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
-import { storage } from "./storage";
+import { storage } from "./storage.js";
 import { insertTimerSessionSchema, insertAcademyProfileSchema, wsMessageSchema, type WSMessage } from "@shared/schema";
-import { requireAuth, publicRoute, logAuthErrors } from "./middleware/auth";
+import { requireAuth, publicRoute, logAuthErrors } from "./middleware/auth.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Adicionar middleware de logging de erros de autenticação

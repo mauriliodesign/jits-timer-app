@@ -6,7 +6,7 @@ import {
   deleteDocument, 
   getDocuments, 
   getLatestDocument 
-} from "../client/src/lib/firebase";
+} from "./firebase.js";
 
 export class FirebaseStorage {
   private currentSessionId: string | null = null;

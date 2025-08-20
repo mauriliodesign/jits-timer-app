@@ -83,20 +83,32 @@ await build({
 });
 ```
 
-### **2. Mudanças Principais**
+### **2. Correção dos Imports ESM**
+
+- ❌ **Antes:** `import { ... } from "./routes"`
+- ✅ **Depois:** `import { ... } from "./routes.js"`
+
+### **3. Firebase do Servidor**
+
+- ✅ Criado `server/firebase.ts` específico para servidor
+- ✅ Usa `process.env` em vez de `import.meta.env`
+- ✅ Separado do Firebase do cliente
+
+### **4. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **3. Módulos Incluídos no Bundle**
+### **5. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
 - ✅ `server/firebase-storage.ts`
+- ✅ `server/firebase.ts`
 - ✅ `server/middleware/auth.ts`
 - ✅ `shared/schema.ts`
 
-### **4. Módulos Excluídos do Bundle**
+### **6. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
@@ -114,6 +126,13 @@ await build({
 grep -n "routes" dist/index.js
 # 269:// server/routes.ts
 # 7656:// server/routes.ts
+
+# Teste do servidor:
+curl -s http://localhost:3001/api/timer/config
+# Retorna HTML da aplicação (funcionando)
+
+curl -X POST http://localhost:3001/api/timer/config
+# Retorna erro de autenticação (esperado)
 ```
 
 ### **Deploy Vercel:**

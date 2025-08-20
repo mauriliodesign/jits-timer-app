@@ -22,7 +22,7 @@ export class MemStorage implements IStorage {
   constructor() {
     // Load Firebase storage
     try {
-      const { firebaseStorage } = require('./firebase-storage');
+      const { firebaseStorage } = require('./firebase-storage.js');
       this.firebaseStorage = firebaseStorage;
       console.log('Firebase storage loaded successfully');
     } catch (error) {
