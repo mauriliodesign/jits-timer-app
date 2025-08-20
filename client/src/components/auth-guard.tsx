@@ -16,6 +16,15 @@ export default function AuthGuard({ children }: AuthGuardProps) {
     return <>{children}</>;
   }
 
+  // In production, check if Firebase is properly configured
+  const hasFirebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY && 
+    import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here';
+
+  if (!hasFirebaseConfig) {
+    // If Firebase is not configured, allow access (fallback for development)
+    return <>{children}</>;
+  }
+
   // Show loading spinner while checking auth state
   if (!initialized || loading) {
     return (

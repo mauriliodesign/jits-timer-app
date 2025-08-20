@@ -54,7 +54,7 @@
 }
 
 .dark {
-  --background: hsl(210 13% 7%);
+  --background: #121214;
   --foreground: hsl(0 0% 90%);
   --card: hsl(210 13% 12%);
   --card-foreground: hsl(0 0% 90%);
@@ -105,8 +105,16 @@
     border-color: hsl(var(--border));
   }
 
-  body {
+  html, body {
     @apply font-sans antialiased bg-background text-foreground;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  #root {
+    height: 100%;
+    min-height: 100vh;
   }
 }
 
