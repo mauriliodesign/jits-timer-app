@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Kode+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -39,7 +39,7 @@
   --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
   --font-sans: 'Roboto', sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+  --font-mono: 'Kode Mono', monospace;
   --radius: 1.3rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
@@ -88,7 +88,7 @@
   --sidebar-ring: hsl(202.8169 89.1213% 53.1373%);
   --font-sans: 'Roboto', sans-serif;
   --font-serif: Georgia, serif;
-  --font-mono: 'IBM Plex Mono', monospace;
+  --font-mono: 'Kode Mono', monospace;
   --radius: 1.3rem;
   --shadow-2xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
   --shadow-xs: 0px 2px 0px 0px hsl(202.8169 89.1213% 53.1373% / 0.00);
@@ -151,7 +151,7 @@
 }
 
 .timer-display {
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: 'Kode Mono', monospace;
   @apply font-bold text-white;
 }
 
