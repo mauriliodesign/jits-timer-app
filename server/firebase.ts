@@ -1,23 +1,24 @@
 import { initializeApp } from "firebase/app";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, limit } from "firebase/firestore";
 
-// Check if Firebase config is available - use both VITE_ and direct env vars
-const hasFirebaseConfig = (process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY) && 
-  (process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID) &&
-  (process.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID);
+// Check if Firebase config is available
+const hasFirebaseConfig = process.env.VITE_FIREBASE_API_KEY && 
+  process.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here' &&
+  process.env.VITE_FIREBASE_PROJECT_ID &&
+  process.env.VITE_FIREBASE_APP_ID;
 
 let app: any = null;
 let db: any = null;
 
 if (hasFirebaseConfig) {
   const firebaseConfig = {
-    apiKey: process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY,
-    authDomain: `${process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
-    projectId: process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID,
-    storageBucket: `${process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
-    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID || process.env.FIREBASE_MESSAGING_SENDER_ID,
-    appId: process.env.VITE_FIREBASE_APP_ID || process.env.FIREBASE_APP_ID,
-    measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID || process.env.FIREBASE_MEASUREMENT_ID,
+    apiKey: process.env.VITE_FIREBASE_API_KEY,
+    authDomain: `${process.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+    projectId: process.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: `${process.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+    messagingSenderId: process.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: process.env.VITE_FIREBASE_APP_ID,
+    measurementId: process.env.VITE_FIREBASE_MEASUREMENT_ID,
   };
 
   try {
@@ -29,15 +30,6 @@ if (hasFirebaseConfig) {
   }
 } else {
   console.error('Firebase configuration missing for server');
-  console.error('Available env vars:', {
-    VITE_FIREBASE_API_KEY: process.env.VITE_FIREBASE_API_KEY ? 'SET' : 'MISSING',
-    FIREBASE_API_KEY: process.env.FIREBASE_API_KEY ? 'SET' : 'MISSING',
-    VITE_FIREBASE_PROJECT_ID: process.env.VITE_FIREBASE_PROJECT_ID ? 'SET' : 'MISSING',
-    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID ? 'SET' : 'MISSING',
-    VITE_FIREBASE_APP_ID: process.env.VITE_FIREBASE_APP_ID ? 'SET' : 'MISSING',
-    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID ? 'SET' : 'MISSING',
-    NODE_ENV: process.env.NODE_ENV
-  });
 }
 
 // Firestore functions
