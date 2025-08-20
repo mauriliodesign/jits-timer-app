@@ -72,7 +72,7 @@ export function useWebSocket() {
       clearInterval(pollingInterval.current);
     }
 
-    // Poll every 2 seconds for timer updates
+    // Poll every 500ms for timer updates (more frequent for real-time feel)
     pollingInterval.current = setInterval(async () => {
       try {
         const response = await fetch('/api/timer/current');

@@ -4,7 +4,7 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage.js";
 import { insertTimerSessionSchema, insertAcademyProfileSchema, wsMessageSchema, type WSMessage } from "../shared/schema.js";
 import { requireAuth, publicRoute, logAuthErrors } from "./middleware/auth.js";
-import { timerEngine } from "./timer-engine.js";
+import { timerEngine, setBroadcastFunction } from "./timer-engine.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Adicionar middleware de logging de erros de autenticação
@@ -221,64 +221,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     });
   }
 
+  // Set broadcast function for timer engine
+  setBroadcastFunction(broadcastMessage);
+
   async function handleWebSocketMessage(message: WSMessage) {
     // Handle incoming WebSocket messages if needed
     console.log("Received WebSocket message:", message);
   }
-
-  // Timer tick logic
-  setInterval(async () => {
-    const session = await storage.getCurrentSession();
-    if (!session || !session.isRunning) return;
-
-    let updates: Partial<typeof session> = {};
-    let needsUpdate = false;
-
-    if (session.currentTime > 0) {
-      updates.currentTime = session.currentTime - 1;
-      needsUpdate = true;
-    } else {
-      // Time is up
-      if (session.isResting) {
-        // Rest period ended, start next round
-        if (session.currentRound < session.rounds) {
-          updates.currentRound = session.currentRound + 1;
-          updates.currentTime = session.roundDuration * 60;
-          updates.isResting = false;
-        } else {
-          // Training complete
-          updates.isRunning = false;
-          updates.isResting = false;
-        }
-      } else {
-        // Round ended, start rest period
-        if (session.currentRound < session.rounds) {
-          updates.currentTime = session.restTime;
-          updates.isResting = true;
-        } else {
-          // Last round completed
-          updates.isRunning = false;
-        }
-      }
-      needsUpdate = true;
-    }
-
-    if (needsUpdate) {
-      const updatedSession = await storage.updateTimerSession(session.id, updates);
-      if (updatedSession) {
-        broadcastMessage({
-          type: "timer_update",
-          data: {
-            currentTime: updatedSession.currentTime,
-            currentRound: updatedSession.currentRound,
-            isRunning: updatedSession.isRunning,
-            isResting: updatedSession.isResting,
-            totalRounds: updatedSession.rounds,
-          },
-        });
-      }
-    }
-  }, 1000);
 
   return httpServer;
 }

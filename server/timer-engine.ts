@@ -1,6 +1,13 @@
 import { storage } from "./storage.js";
 import type { TimerSession } from "../shared/schema.js";
 
+// Import broadcast function
+let broadcastMessage: (message: any) => void;
+
+export function setBroadcastFunction(broadcastFn: (message: any) => void) {
+  broadcastMessage = broadcastFn;
+}
+
 class TimerEngine {
   private intervals: Map<string, NodeJS.Timeout> = new Map();
 
@@ -74,6 +81,23 @@ class TimerEngine {
 
       // Update session
       await storage.updateTimerSession(sessionId, updates);
+
+      // Broadcast timer update to all clients
+      if (broadcastMessage && Object.keys(updates).length > 0) {
+        const updatedSession = await storage.getTimerSession(sessionId);
+        if (updatedSession) {
+          broadcastMessage({
+            type: "timer_update",
+            data: {
+              currentTime: updatedSession.currentTime,
+              currentRound: updatedSession.currentRound,
+              isRunning: updatedSession.isRunning,
+              isResting: updatedSession.isResting,
+              totalRounds: updatedSession.rounds,
+            },
+          });
+        }
+      }
 
       if (shouldStop) {
         this.stopTimer(sessionId);
