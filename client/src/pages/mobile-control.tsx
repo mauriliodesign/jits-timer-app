@@ -222,32 +222,30 @@ export default function MobileControl() {
         
 
         {/* Current Status Display */}
-        {currentSession && (
-          <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
-            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
-              <div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
-                  {currentSession.currentRound}
-                </div>
-                <div className="text-xs sm:text-sm text-[#4a4a4f]">Rola Atual</div>
+        <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
+          <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
+                {currentSession ? getSafeValue(currentSession.currentRound, 1) : 1}
               </div>
-              <div>
-                <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
-                  {formatTime(currentSession.currentTime)}
-                </div>
-                <div className="text-xs sm:text-sm text-[#4a4a4f]">
-                  {currentSession.isResting ? "Descanso" : "Tempo"}
-                </div>
+              <div className="text-xs sm:text-sm text-[#4a4a4f]">Rola Atual</div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
+                {currentSession ? formatTime(getSafeValue(currentSession.currentTime, 0)) : "00:00"}
               </div>
-              <div>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
-                  {currentSession.rounds}
-                </div>
-                <div className="text-xs sm:text-sm text-[#4a4a4f]">Total</div>
+              <div className="text-xs sm:text-sm text-[#4a4a4f]">
+                {currentSession?.isResting ? "Descanso" : "Tempo"}
               </div>
             </div>
+            <div>
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
+                {currentSession ? getSafeValue(currentSession.rounds, 5) : 5}
+              </div>
+              <div className="text-xs sm:text-sm text-[#4a4a4f]">Total</div>
+            </div>
           </div>
-        )}
+        </div>
 
         {/* Configuration Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 lg:mb-8">
@@ -363,51 +361,52 @@ export default function MobileControl() {
         {/* Control Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 lg:mb-8">
           {/* Main Control Button - Iniciar/Pausar/Continuar */}
-          {currentSession && (
-            <Button
-              onClick={() => {
-                if (!currentSession.isRunning) {
-                  // Se não está rodando, aplicar config e iniciar
-                  applyConfig();
-                  handleControl("start");
-                } else {
-                  // Se está rodando, pausar
-                  handleControl("pause");
-                }
-              }}
-              disabled={configMutation.isPending || controlMutation.isPending}
-              className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl"
-            >
-              {currentSession.isRunning ? (
-                <>
-                  <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                  Pausar o Treino
-                </>
-              ) : currentSession.currentRound > 1 ? (
-                <>
-                  <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                  Continuar
-                </>
-              ) : (
-                <>
-                  <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                  Iniciar Treino
-                </>
-              )}
-            </Button>
-          )}
+          <Button
+            onClick={() => {
+              if (currentSession && !currentSession.isRunning) {
+                // Se não está rodando, aplicar config e iniciar
+                applyConfig();
+                handleControl("start");
+              } else if (currentSession && currentSession.isRunning) {
+                // Se está rodando, pausar
+                handleControl("pause");
+              }
+            }}
+            disabled={!currentSession || configMutation.isPending || controlMutation.isPending}
+            className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {!currentSession ? (
+              <>
+                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                Carregando...
+              </>
+            ) : currentSession.isRunning ? (
+              <>
+                <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                Pausar o Treino
+              </>
+            ) : getSafeValue(currentSession.currentRound, 1) > 1 ? (
+              <>
+                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                Continuar
+              </>
+            ) : (
+              <>
+                <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                Iniciar Treino
+              </>
+            )}
+          </Button>
           
-          {/* Reset Button - estilo secundário */}
-          {currentSession && (
-            <Button
-              onClick={() => handleControl("reset")}
-              disabled={controlMutation.isPending}
-              className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20"
-            >
-              <RotateCcw className="mr-2 h-5 w-5" />
-              Resetar
-            </Button>
-          )}
+          {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
+          <Button
+            onClick={() => handleControl("reset")}
+            disabled={!currentSession || controlMutation.isPending}
+            className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <RotateCcw className="mr-2 h-5 w-5" />
+            Resetar
+          </Button>
         </div>
 
         {/* Connection Status */}
