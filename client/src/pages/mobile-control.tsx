@@ -16,6 +16,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import UserProfile from "@/components/user-profile";
+import UnifiedTimer from "@/components/unified-timer";
 import type { TimerSession } from "@shared/schema";
 
 export default function MobileControl() {
@@ -305,15 +306,17 @@ export default function MobileControl() {
               </div>
             </div>
             <div>
-              <div className="text-caption mb-1">
-                {timerState.isResting ? "Descanso" : "Tempo"}
-              </div>
-              <div className="timer-display-large">
-                {isTrainingStarted() 
-                  ? formatTime(getSafeValue(timerState.currentTime, 0))
-                  : "00:00"
-                }
-              </div>
+              <UnifiedTimer
+                mode="countdown"
+                size="large"
+                variant="minimal"
+                color="green"
+                initialTime={getSafeValue(timerState.currentTime, 0)}
+                isRunning={timerState.isRunning}
+                showControls={false}
+                showLabels={false}
+                className="text-center"
+              />
             </div>
             <div>
               <div className="text-caption mb-1">Total</div>
@@ -515,6 +518,23 @@ export default function MobileControl() {
             <RotateCcw className="mr-2 h-5 w-5" />
             Resetar
           </Button>
+        </div>
+
+        {/* Clock Display */}
+        <div className="section-spacing">
+          <UnifiedTimer
+            mode="clock"
+            size="medium"
+            variant="card"
+            color="blue"
+            showControls={false}
+            showLabels={true}
+            customLabels={{
+              hours: "Hora",
+              minutes: "Min",
+              seconds: "Seg"
+            }}
+          />
         </div>
 
         {/* Connection Status */}
