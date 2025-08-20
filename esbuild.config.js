@@ -62,6 +62,9 @@ async function buildServer() {
       keepNames: true,
       define: {
         'process.env.NODE_ENV': '"production"'
+      },
+      alias: {
+        '@shared': './shared'
       }
     });
     

@@ -77,10 +77,13 @@ await build({
   sourcemap: true,
   minify: false,
   keepNames: true,
-  define: {
-    'process.env.NODE_ENV': '"production"'
-  }
-});
+        define: {
+        'process.env.NODE_ENV': '"production"'
+      },
+      alias: {
+        '@shared': './shared'
+      }
+    });
 ```
 
 ### **2. Correção dos Imports ESM**
@@ -94,12 +97,18 @@ await build({
 - ✅ Usa `process.env` em vez de `import.meta.env`
 - ✅ Separado do Firebase do cliente
 
-### **4. Mudanças Principais**
+### **4. Alias de Módulos**
+
+- ✅ Adicionado alias `@shared` no esbuild
+- ✅ Resolve `@shared/schema` para `./shared/schema`
+- ✅ Módulos compartilhados incluídos no bundle
+
+### **5. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **5. Módulos Incluídos no Bundle**
+### **6. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
@@ -108,7 +117,7 @@ await build({
 - ✅ `server/middleware/auth.ts`
 - ✅ `shared/schema.ts`
 
-### **6. Módulos Excluídos do Bundle**
+### **7. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
@@ -133,6 +142,10 @@ curl -s http://localhost:3001/api/timer/config
 
 curl -X POST http://localhost:3001/api/timer/config
 # Retorna erro de autenticação (esperado)
+
+# Verificação do alias:
+grep -n "shared/schema" dist/index.js
+# 7548:// shared/schema.ts
 ```
 
 ### **Deploy Vercel:**
