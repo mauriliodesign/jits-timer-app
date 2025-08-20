@@ -18,6 +18,14 @@
 - Atualizado `esbuild` para `^0.25.9`
 - Atualizado `typescript` para `^5.9.2`
 
+### 3. ❌ Erro: "It looks like you're trying to use tailwindcss directly as a PostCSS plugin"
+**Causa**: Conflito de versões do TailwindCSS (v4 vs v3) e configuração incorreta
+
+**✅ Solução**:
+- Removido `@tailwindcss/vite` (v4)
+- Corrigido `tailwindcss` para `^3.4.17`
+- Configurado `postcss.config.js` com sintaxe ES modules
+
 ## Arquivos Modificados
 
 ### `package.json`
@@ -40,6 +48,17 @@
 + NODE_ENV = "development"
 - NPM_FLAGS = "--production=false"
 + NPM_FLAGS = ""
+```
+
+### `postcss.config.js`
+```diff
+- module.exports = {
++ export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+}
 ```
 
 ## Status do Build

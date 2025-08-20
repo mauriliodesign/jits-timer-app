@@ -1,10 +1,12 @@
 # 🚀 Correção Final - Deploy Netlify
 
-## ✅ Problema Resolvido
+## ✅ Problemas Resolvidos
 
-**Erro**: `npm warn config production Use --omit=dev instead`
-
+### 1. **Erro**: `npm warn config production Use --omit=dev instead`
 **Causa**: Netlify estava usando uma versão mais nova do npm que usa `--omit=dev` em vez de `--production`
+
+### 2. **Erro**: `It looks like you're trying to use tailwindcss directly as a PostCSS plugin`
+**Causa**: Conflito de versões do TailwindCSS (v4 vs v3) e configuração incorreta do PostCSS
 
 ## 🔧 Solução Aplicada
 
@@ -25,8 +27,19 @@
   "devDependencies": {
     "drizzle-kit": "^0.31.4",             // ✅ Atualizado de ^0.29.3
     "esbuild": "^0.25.9",                 // ✅ Atualizado de ^0.22.8
-    "typescript": "^5.9.2"                // ✅ Atualizado de ^5.7.2
+    "typescript": "^5.9.2",               // ✅ Atualizado de ^5.7.2
+    "tailwindcss": "^3.4.17"              // ✅ Corrigido conflito de versão
   }
+}
+```
+
+### 3. Configuração PostCSS Corrigida (`postcss.config.js`)
+```javascript
+export default {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
 }
 ```
 
@@ -36,6 +49,8 @@
 2. **NPM_FLAGS = ""**: Não força nenhuma flag específica, permitindo instalação completa
 3. **Vite em dependencies**: Garante que o Vite esteja disponível para o build
 4. **Dependências atualizadas**: Evita erros de versões inexistentes
+5. **TailwindCSS v3**: Versão estável e compatível com PostCSS
+6. **PostCSS config correto**: Sintaxe ES modules compatível com o projeto
 
 ## 📋 Status Atual
 

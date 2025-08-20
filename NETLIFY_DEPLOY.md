@@ -46,6 +46,11 @@ No Firebase Console:
 - ✅ Esbuild atualizado para ^0.25.9
 - ✅ TypeScript atualizado para ^5.9.2
 
+**Erro: "It looks like you're trying to use tailwindcss directly as a PostCSS plugin"**
+- ✅ Resolvido: Removido @tailwindcss/vite (v4)
+- ✅ Corrigido tailwindcss para ^3.4.17
+- ✅ Configurado postcss.config.js com sintaxe ES modules
+
 **Erro: "Firebase not initialized"**
 - ✅ Verifique se as variáveis de ambiente estão configuradas
 - ✅ Verifique se o domínio está autorizado no Firebase
