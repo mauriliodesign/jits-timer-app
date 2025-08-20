@@ -33,7 +33,7 @@ export class DevStorage {
       roundDuration: sessionData.roundDuration,
       restTime: sessionData.restTime,
       currentRound: 1,
-      currentTime: sessionData.roundDuration * 60, // Start with full time
+      currentTime: 0, // Start with 0 seconds
       isRunning: false,
       isResting: false,
       createdAt: new Date(),

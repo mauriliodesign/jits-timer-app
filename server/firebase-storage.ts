@@ -50,7 +50,7 @@ export class FirebaseStorage {
       roundDuration: 6,
       restTime: 60,
       currentRound: 1,
-      currentTime: 6 * 60, // 6 minutes in seconds
+      currentTime: 0, // Start with 0 seconds
       isRunning: false,
       isResting: false,
     });
