@@ -3,8 +3,8 @@
   publish = "dist"
 
 [build.environment]
-  NODE_ENV = "production"
-  NPM_FLAGS = "--production=false"
+  NODE_ENV = "development"
+  NPM_FLAGS = ""
 
 [[redirects]]
   from = "/api/*"

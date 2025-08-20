@@ -20,7 +20,8 @@ NODE_ENV=production
 O arquivo `netlify.toml` já está configurado com:
 - Build command: `npm run build`
 - Publish directory: `dist`
-- NPM flags: `--production=false` (para instalar devDependencies necessárias)
+- NODE_ENV: `development` (para instalar todas as dependências)
+- NPM flags: vazio (instala todas as dependências)
 
 ### 3. Domínios Autorizados no Firebase
 
@@ -38,7 +39,7 @@ No Firebase Console:
 
 **Erro: "vite: not found"**
 - ✅ Resolvido: Vite movido para dependencies
-- ✅ NPM_FLAGS configurado para instalar todas as dependências
+- ✅ NODE_ENV configurado para "development" para instalar todas as dependências
 
 **Erro: "No matching version found for drizzle-kit"**
 - ✅ Resolvido: Atualizado para versão ^0.31.4

@@ -8,7 +8,7 @@
 **✅ Solução**:
 - Movido `vite: ^5.4.19` para `dependencies`
 - Movido `@vitejs/plugin-react: ^4.3.2` para `dependencies`
-- Adicionado `NPM_FLAGS = "--production=false"` no `netlify.toml`
+- Configurado `NODE_ENV = "development"` no `netlify.toml` para instalar todas as dependências
 
 ### 2. ❌ Erro: "No matching version found for drizzle-kit@^0.29.3"
 **Causa**: Versão do drizzle-kit não existia no npm registry
@@ -36,8 +36,10 @@
 ### `netlify.toml`
 ```diff
 [build.environment]
-  NODE_ENV = "production"
-+ NPM_FLAGS = "--production=false"
+- NODE_ENV = "production"
++ NODE_ENV = "development"
+- NPM_FLAGS = "--production=false"
++ NPM_FLAGS = ""
 ```
 
 ## Status do Build
