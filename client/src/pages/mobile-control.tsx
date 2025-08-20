@@ -332,12 +332,12 @@ export default function MobileControl() {
           <div className="app-card-compact">
             <div className="flex items-center mb-3 sm:mb-4 lg:mb-6">
               <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-[#59FF3A] mr-2" />
-              <h2 className="text-display-small">Configurações</h2>
+              <h2 className="text-heading-large">Configurações</h2>
             </div>
             
             {/* Number of Rounds */}
             <div className="section-spacing-compact">
-              <label className="block text-body-small font-medium mb-2 sm:mb-3 text-[#5a5a60]">Número de Rolas</label>
+              <label className="block text-heading-small font-medium mb-2 sm:mb-3 text-[#5a5a60]">Número de Rolas</label>
               <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                                   <Button
                     variant="outline"
@@ -367,7 +367,7 @@ export default function MobileControl() {
 
             {/* Round Duration */}
             <div className="section-spacing-compact">
-              <label className="block text-body-small font-medium mb-3 text-[#52525a]">Duração da Rola (minutos)</label>
+              <label className="block text-heading-small font-medium mb-3 text-[#52525a]">Duração da Rola (minutos)</label>
               <div className="flex items-center justify-center space-x-4">
                                   <Button
                     variant="outline"
@@ -397,7 +397,7 @@ export default function MobileControl() {
 
             {/* Rest Time */}
             <div className="section-spacing-compact">
-              <label className="block text-body-small font-medium mb-3 text-[#52525a]">Tempo de Descanso (segundos)</label>
+              <label className="block text-heading-small font-medium mb-3 text-[#52525a]">Tempo de Descanso (segundos)</label>
               <div className="flex items-center justify-center space-x-4">
                                   <Button
                     variant="outline"
@@ -431,7 +431,7 @@ export default function MobileControl() {
           {/* Total Time and Quick Actions */}
           <div className="app-card-compact">
             <div className="text-center mb-6">
-              <div className="text-caption mb-2">Tempo Total</div>
+              <div className="text-heading-small mb-2">Tempo Total</div>
               <div className="timer-display-medium">
                 {isConfigComplete() 
                   ? calculateTotalTime(config.rounds, config.roundDuration, config.restTime)
@@ -519,7 +519,7 @@ export default function MobileControl() {
 
         {/* Connection Status */}
         <div className="text-center">
-          <div className="inline-flex items-center text-body-small text-[#5a5a60]">
+          <div className="inline-flex items-center text-caption text-[#5a5a60]">
             <div className={`w-2 h-2 rounded-full mr-2 ${isConnected ? "bg-[#59FF3A] animate-pulse" : "bg-red-500"}`}></div>
             {isConnected ? "Conectado" : "Desconectado"}
           </div>
