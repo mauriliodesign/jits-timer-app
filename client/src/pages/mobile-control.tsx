@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Square, Plus, Minus, Settings, Timer, Wifi, Users, RotateCcw, Monitor } from "lucide-react";
+import { Play, Pause, Square, Settings, Timer, Wifi, Users, RotateCcw, Monitor } from "lucide-react";
 import { useWebSocket } from "@/hooks/use-websocket";
 import { formatTime, calculateTotalTime } from "@/lib/timer-utils";
 import { 
@@ -17,6 +17,7 @@ import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import UserProfile from "@/components/user-profile";
 import UnifiedTimer from "@/components/unified-timer";
+import Stepper from "@/components/stepper";
 import type { TimerSession } from "@shared/schema";
 
 export default function MobileControl() {
@@ -339,96 +340,49 @@ export default function MobileControl() {
             </div>
             
             {/* Number of Rounds */}
-            <div className="section-spacing-compact">
-              <label className="block text-heading-small font-medium mb-2 sm:mb-3 text-[#5a5a60]">Número de Rolas</label>
-              <div className="flex items-center justify-center space-x-2 sm:space-x-4">
-                                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("rounds", -1)}
-                    disabled={configChanged.rounds && config.rounds <= CONFIG_LIMITS.rounds.min}
-                  >
-                    <Minus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
-                  </Button>
-                  <div className="w-10 sm:w-12 lg:w-16 text-center">
-                    <span className="timer-display-medium">
-                      {configChanged.rounds ? config.rounds : "—"}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("rounds", 1)}
-                    disabled={configChanged.rounds && config.rounds >= CONFIG_LIMITS.rounds.max}
-                  >
-                    <Plus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
-                  </Button>
-              </div>
-            </div>
+            <Stepper
+              value={config.rounds}
+              onValueChange={(value) => handleConfigChange("rounds", value - config.rounds)}
+              min={CONFIG_LIMITS.rounds.min}
+              max={CONFIG_LIMITS.rounds.max}
+              step={1}
+              size="large"
+              variant="minimal"
+              showValue={configChanged.rounds}
+              placeholder="—"
+              label="Número de Rolas"
+              className="section-spacing-compact"
+            />
 
             {/* Round Duration */}
-            <div className="section-spacing-compact">
-              <label className="block text-heading-small font-medium mb-3 text-[#52525a]">Duração da Rola (minutos)</label>
-              <div className="flex items-center justify-center space-x-4">
-                                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("roundDuration", -1)}
-                    disabled={configChanged.roundDuration && config.roundDuration <= CONFIG_LIMITS.roundDuration.min}
-                  >
-                    <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </Button>
-                  <div className="w-12 lg:w-16 text-center">
-                    <span className="timer-display-medium">
-                      {configChanged.roundDuration ? config.roundDuration : "—"}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("roundDuration", 1)}
-                    disabled={configChanged.roundDuration && config.roundDuration >= CONFIG_LIMITS.roundDuration.max}
-                  >
-                    <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </Button>
-              </div>
-            </div>
+            <Stepper
+              value={config.roundDuration}
+              onValueChange={(value) => handleConfigChange("roundDuration", value - config.roundDuration)}
+              min={CONFIG_LIMITS.roundDuration.min}
+              max={CONFIG_LIMITS.roundDuration.max}
+              step={1}
+              size="large"
+              variant="minimal"
+              showValue={configChanged.roundDuration}
+              placeholder="—"
+              label="Duração da Rola (minutos)"
+              className="section-spacing-compact"
+            />
 
             {/* Rest Time */}
-            <div className="section-spacing-compact">
-              <label className="block text-heading-small font-medium mb-3 text-[#52525a]">Tempo de Descanso (segundos)</label>
-              <div className="flex items-center justify-center space-x-4">
-                                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("restTime", -5)}
-                    disabled={configChanged.restTime && config.restTime <= CONFIG_LIMITS.restTime.min}
-                  >
-                    <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </Button>
-                  <div className="w-12 lg:w-16 text-center">
-                    <span className="timer-display-medium">
-                      {configChanged.restTime ? config.restTime : "—"}
-                    </span>
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
-                    onClick={() => handleConfigChange("restTime", 5)}
-                    disabled={configChanged.restTime && config.restTime >= CONFIG_LIMITS.restTime.max}
-                  >
-                    <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
-                  </Button>
-              </div>
-            </div>
-
-
+            <Stepper
+              value={config.restTime}
+              onValueChange={(value) => handleConfigChange("restTime", value - config.restTime)}
+              min={CONFIG_LIMITS.restTime.min}
+              max={CONFIG_LIMITS.restTime.max}
+              step={5}
+              size="large"
+              variant="minimal"
+              showValue={configChanged.restTime}
+              placeholder="—"
+              label="Tempo de Descanso (segundos)"
+              className="section-spacing-compact"
+            />
           </div>
 
           {/* Total Time and Quick Actions */}
