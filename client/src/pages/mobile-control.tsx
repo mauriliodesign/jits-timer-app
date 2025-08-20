@@ -300,7 +300,7 @@ export default function MobileControl() {
           <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Rola Atual</div>
-              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono tracking-wider">
                 {isTrainingStarted() ? getSafeValue(timerState.currentRound, 1) : "—"}
               </div>
             </div>
@@ -308,7 +308,7 @@ export default function MobileControl() {
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">
                 {timerState.isResting ? "Descanso" : "Tempo"}
               </div>
-              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono tracking-wider">
                 {isTrainingStarted() 
                   ? formatTime(getSafeValue(timerState.currentTime, 0))
                   : "00:00"
@@ -317,7 +317,7 @@ export default function MobileControl() {
             </div>
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Total</div>
-              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
+              <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono tracking-wider">
                 {isTrainingStarted() 
                   ? getSafeValue(timerState.totalRounds, 5)
                   : "—"
@@ -349,7 +349,7 @@ export default function MobileControl() {
                   <Minus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-10 sm:w-12 lg:w-16 text-center">
-                  <span className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono tracking-wider">
                     {configChanged.rounds ? config.rounds : "—"}
                   </span>
                 </div>
@@ -379,7 +379,7 @@ export default function MobileControl() {
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-12 lg:w-16 text-center">
-                  <span className="text-2xl lg:text-3xl font-bold font-mono">
+                  <span className="text-2xl lg:text-3xl font-bold font-mono tracking-wider">
                     {configChanged.roundDuration ? config.roundDuration : "—"}
                   </span>
                 </div>
@@ -409,7 +409,7 @@ export default function MobileControl() {
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <div className="w-12 lg:w-16 text-center">
-                  <span className="text-2xl lg:text-3xl font-bold font-mono">
+                  <span className="text-2xl lg:text-3xl font-bold font-mono tracking-wider">
                     {configChanged.restTime ? config.restTime : "—"}
                   </span>
                 </div>
@@ -432,7 +432,7 @@ export default function MobileControl() {
           <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-4 lg:p-6">
             <div className="text-center mb-6">
               <div className="text-sm text-[#5a5a60] mb-2">Tempo Total</div>
-              <div className="text-3xl lg:text-4xl font-bold text-white font-mono">
+              <div className="text-3xl lg:text-4xl font-bold text-white font-mono tracking-wider">
                 {isConfigComplete() 
                   ? calculateTotalTime(config.rounds, config.roundDuration, config.restTime)
                   : "—"
