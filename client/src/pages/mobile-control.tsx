@@ -82,6 +82,7 @@ export default function MobileControl() {
       isResting: false,
       currentRound: 1,
       totalRounds: 5,
+      currentTime: 0,
     });
     
     // Reset do audio
@@ -93,6 +94,7 @@ export default function MobileControl() {
     isResting: false,
     currentRound: 1,
     totalRounds: 5,
+    currentTime: 0,
   });
 
   const previousStateRef = useRef(timerState);
@@ -157,6 +159,7 @@ export default function MobileControl() {
         isResting: lastMessage.data.isResting,
         currentRound: lastMessage.data.currentRound,
         totalRounds: lastMessage.data.totalRounds,
+        currentTime: lastMessage.data.currentTime || 0,
       };
       
       setTimerState(newState);
@@ -171,6 +174,7 @@ export default function MobileControl() {
         isResting: currentSession.isResting,
         currentRound: getSafeValue(currentSession.currentRound, 1),
         totalRounds: getSafeValue(currentSession.rounds, 5),
+        currentTime: getSafeValue(currentSession.currentTime, 0),
       });
       
       // Garantir que os valores da sessão são seguros
@@ -293,16 +297,16 @@ export default function MobileControl() {
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Rola Atual</div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
-                {isTrainingStarted() ? getSafeValue(currentSession?.currentRound, 1) : "—"}
+                {isTrainingStarted() ? getSafeValue(timerState.currentRound, 1) : "—"}
               </div>
             </div>
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">
-                {currentSession?.isResting ? "Descanso" : "Tempo"}
+                {timerState.isResting ? "Descanso" : "Tempo"}
               </div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {isTrainingStarted() 
-                  ? formatTime(getSafeValue(currentSession?.currentTime, 0))
+                  ? formatTime(getSafeValue(timerState.currentTime, 0))
                   : "00:00"
                 }
               </div>
@@ -311,7 +315,7 @@ export default function MobileControl() {
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Total</div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {isTrainingStarted() 
-                  ? getSafeValue(currentSession?.rounds, 5)
+                  ? getSafeValue(timerState.totalRounds, 5)
                   : "—"
                 }
               </div>
