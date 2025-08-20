@@ -62,8 +62,9 @@ export default function MobileControl() {
     return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
   };
 
-  // Função para resetar a configuração
-  const resetConfig = () => {
+  // Função para resetar completamente a aplicação
+  const resetAll = () => {
+    // Reset da configuração
     setConfig({
       rounds: 5,
       roundDuration: 6,
@@ -74,6 +75,17 @@ export default function MobileControl() {
       roundDuration: false,
       restTime: false,
     });
+    
+    // Reset do timer state
+    setTimerState({
+      isRunning: false,
+      isResting: false,
+      currentRound: 1,
+      totalRounds: 5,
+    });
+    
+    // Reset do audio
+    audioInitializedRef.current = false;
   };
 
   const [timerState, setTimerState] = useState({
@@ -413,7 +425,10 @@ export default function MobileControl() {
             <div className="text-center mb-6">
               <div className="text-sm text-[#5a5a60] mb-2">Tempo Total</div>
               <div className="text-3xl lg:text-4xl font-bold text-white font-mono">
-                {calculateTotalTime(config.rounds, config.roundDuration, config.restTime)}
+                {isConfigComplete() 
+                  ? calculateTotalTime(config.rounds, config.roundDuration, config.restTime)
+                  : "—"
+                }
               </div>
             </div>
             
@@ -477,7 +492,7 @@ export default function MobileControl() {
           <Button
             onClick={() => {
               handleControl("reset");
-              resetConfig();
+              resetAll();
             }}
             disabled={!currentSession || controlMutation.isPending}
             className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
