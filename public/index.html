@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+    <title>Jiu-jitsu Timer</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: Inter, sans-serif;
+        background-color: #121214;
+        color: white;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+      .loading {
+        font-size: 2rem;
+        margin-bottom: 1rem;
+      }
+      .status {
+        font-size: 1rem;
+        opacity: 0.7;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="loading">🥋 Jiu-jitsu Timer</div>
+    <div class="status">Carregando...</div>
+    <script>
+      // Simple loading page
+      console.log('Jiu-jitsu Timer loading...');
+      
+      // Check if we're in development or production
+      const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      
+      if (isDev) {
+        // In development, load the full app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/src/main.tsx';
+        document.head.appendChild(script);
+      } else {
+        // In production, show a message
+        document.querySelector('.status').textContent = 'Aplicação em manutenção. Volte em breve!';
+      }
+    </script>
+  </body>
+</html>

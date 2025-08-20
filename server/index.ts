@@ -13,9 +13,9 @@ if (process.env.NODE_ENV === "development") {
   log = (message: string) => console.log(message);
   serveStatic = (app: any) => {
     // Simple static file serving for production
-    app.use(express.static("dist/public"));
+    app.use(express.static("public"));
     app.use("*", (_req: any, res: any) => {
-      res.sendFile("dist/public/index.html", { root: "." });
+      res.sendFile("public/index.html", { root: "." });
     });
   };
 }
