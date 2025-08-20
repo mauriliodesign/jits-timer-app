@@ -96,34 +96,41 @@ await build({
 - ❌ **Antes:** `import { ... } from "@shared/schema"`
 - ✅ **Depois:** `import { ... } from "../shared/schema.js"`
 
-### **4. Firebase do Servidor**
+### **4. Correção do Import vite.config**
+
+- ❌ **Antes:** `import viteConfig from "../vite.config"`
+- ✅ **Depois:** `import viteConfig from "../vite.config.js"`
+
+### **5. Firebase do Servidor**
 
 - ✅ Criado `server/firebase.ts` específico para servidor
 - ✅ Usa `process.env` em vez de `import.meta.env`
 - ✅ Separado do Firebase do cliente
 
-### **5. Imports de Módulos Corrigidos**
+### **6. Imports de Módulos Corrigidos**
 
 - ❌ **Antes:** `import { ... } from "@shared/schema"`
 - ✅ **Depois:** `import { ... } from "../shared/schema.js"`
 - ✅ Caminhos relativos diretos em vez de alias
 - ✅ Extensões `.js` obrigatórias para ESM
 
-### **6. Mudanças Principais**
+### **7. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **7. Módulos Incluídos no Bundle**
+### **8. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
 - ✅ `server/firebase-storage.ts`
 - ✅ `server/firebase.ts`
+- ✅ `server/vite.ts`
 - ✅ `server/middleware/auth.ts`
 - ✅ `shared/schema.ts`
+- ✅ `vite.config.ts`
 
-### **8. Módulos Excluídos do Bundle**
+### **9. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
