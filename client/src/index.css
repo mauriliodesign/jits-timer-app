@@ -133,50 +133,168 @@
   }
 }
 
-/* Custom Jiu-Jitsu Timer Styles */
-.timer-button-green {
-  @apply bg-green-600 hover:bg-green-700 active:bg-green-800;
-}
+@layer components {
+  /* Responsive Grid System */
+  .app-container {
+    @apply min-h-screen bg-[#121214] text-white;
+  }
 
-.timer-button-blue {
-  @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800;
-}
+  .app-content {
+    @apply container mx-auto px-3 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 max-w-7xl;
+  }
 
-.timer-button-orange {
-  @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800;
-}
+  .app-header {
+    @apply flex flex-row items-center justify-between mb-4 sm:mb-6 lg:mb-8 gap-2 sm:gap-4;
+  }
 
-.timer-button-red {
-  @apply bg-red-600 hover:bg-red-700 active:bg-red-800;
-}
+  .app-logo {
+    @apply h-7 sm:h-9 lg:h-11 xl:h-12;
+  }
 
-.timer-display {
-  font-family: 'Kode Mono', monospace;
-  @apply font-bold text-white;
-}
+  /* Card System */
+  .app-card {
+    @apply bg-[#17171a] border border-[#1e1e21] rounded-2xl;
+  }
 
-.status-indicator {
-  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
-}
+  .app-card-compact {
+    @apply app-card p-3 sm:p-4 lg:p-6;
+  }
 
-.connection-indicator {
-  @apply inline-flex items-center text-sm;
-}
+  .app-card-spacious {
+    @apply app-card p-4 sm:p-6 lg:p-8 xl:p-10;
+  }
 
-/* Circular progress animation */
-.progress-circle {
-  transition: stroke-dashoffset 1s linear;
-}
+  /* Grid Layouts */
+  .grid-status {
+    @apply grid grid-cols-3 gap-2 sm:gap-4 lg:gap-6 text-center;
+  }
 
-/* Status colors */
-.status-running {
-  @apply bg-green-500/20 text-green-400 border-green-600;
-}
+  .grid-config {
+    @apply grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8;
+  }
 
-.status-resting {
-  @apply bg-orange-500/20 text-orange-400 border-orange-600;
-}
+  .grid-controls {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6;
+  }
 
-.status-paused {
-  @apply bg-gray-500/20 text-gray-400 border-gray-600;
+  .grid-responsive {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 lg:gap-8;
+  }
+
+  /* Spacing System */
+  .section-spacing {
+    @apply mb-4 sm:mb-6 lg:mb-8 xl:mb-10;
+  }
+
+  .section-spacing-compact {
+    @apply mb-3 sm:mb-4 lg:mb-6;
+  }
+
+  .section-spacing-large {
+    @apply mb-6 sm:mb-8 lg:mb-10 xl:mb-12;
+  }
+
+  /* Typography Scale */
+  .text-display-large {
+    @apply text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold;
+  }
+
+  .text-display-medium {
+    @apply text-xl sm:text-2xl lg:text-3xl xl:text-4xl font-bold;
+  }
+
+  .text-display-small {
+    @apply text-lg sm:text-xl lg:text-2xl xl:text-3xl font-semibold;
+  }
+
+  .text-body-large {
+    @apply text-base sm:text-lg lg:text-xl;
+  }
+
+  .text-body-medium {
+    @apply text-sm sm:text-base lg:text-lg;
+  }
+
+  .text-body-small {
+    @apply text-xs sm:text-sm lg:text-base;
+  }
+
+  .text-caption {
+    @apply text-xs sm:text-sm text-[#4a4a4f];
+  }
+
+  /* Button System */
+  .btn-primary {
+    @apply w-full h-12 sm:h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
+  .btn-secondary {
+    @apply w-full h-12 sm:h-14 lg:h-16 bg-white bg-opacity-10 hover:bg-opacity-20 text-white rounded-xl border border-white border-opacity-20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors;
+  }
+
+  .btn-control {
+    @apply w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50 transition-colors;
+  }
+
+  /* Timer Display */
+  .timer-display {
+    font-family: 'Kode Mono', monospace;
+    @apply font-bold text-white tracking-wider;
+  }
+
+  .timer-display-large {
+    @apply timer-display text-display-large;
+  }
+
+  .timer-display-medium {
+    @apply timer-display text-display-medium;
+  }
+
+  .timer-display-small {
+    @apply timer-display text-display-small;
+  }
+
+  /* Status Indicators */
+  .status-indicator {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .connection-indicator {
+    @apply inline-flex items-center text-sm;
+  }
+
+  /* Progress and Animation */
+  .progress-circle {
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  /* Status colors */
+  .status-running {
+    @apply bg-green-500/20 text-green-400 border-green-600;
+  }
+
+  .status-resting {
+    @apply bg-orange-500/20 text-orange-400 border-orange-600;
+  }
+
+  .status-paused {
+    @apply bg-gray-500/20 text-gray-400 border-gray-600;
+  }
+
+  /* Custom Jiu-Jitsu Timer Styles */
+  .timer-button-green {
+    @apply bg-green-600 hover:bg-green-700 active:bg-green-800;
+  }
+
+  .timer-button-blue {
+    @apply bg-blue-600 hover:bg-blue-700 active:bg-blue-800;
+  }
+
+  .timer-button-orange {
+    @apply bg-orange-600 hover:bg-orange-700 active:bg-orange-800;
+  }
+
+  .timer-button-red {
+    @apply bg-red-600 hover:bg-red-700 active:bg-red-800;
+  }
 }
