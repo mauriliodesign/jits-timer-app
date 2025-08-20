@@ -3,11 +3,55 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChang
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore, collection, doc, setDoc, getDoc, getDocs, updateDoc, deleteDoc, query, orderBy, limit } from "firebase/firestore";
 
-// Check if Firebase config is available
-const hasFirebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY && 
-  import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here' &&
-  import.meta.env.VITE_FIREBASE_PROJECT_ID &&
-  import.meta.env.VITE_FIREBASE_APP_ID;
+// Extend Window interface for Firebase config
+declare global {
+  interface Window {
+    VITE_FIREBASE_API_KEY?: string;
+    VITE_FIREBASE_PROJECT_ID?: string;
+    VITE_FIREBASE_APP_ID?: string;
+    VITE_FIREBASE_MESSAGING_SENDER_ID?: string;
+    VITE_FIREBASE_MEASUREMENT_ID?: string;
+  }
+}
+
+// Check if Firebase config is available (runtime check)
+const getFirebaseConfig = () => {
+  // Try import.meta.env first (for development)
+  if (import.meta.env.VITE_FIREBASE_API_KEY && 
+      import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here' &&
+      import.meta.env.VITE_FIREBASE_PROJECT_ID &&
+      import.meta.env.VITE_FIREBASE_APP_ID) {
+    return {
+      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+      authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+      storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+      messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: import.meta.env.VITE_FIREBASE_APP_ID,
+      measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+    };
+  }
+  
+  // Try window variables (for production)
+  if (window.VITE_FIREBASE_API_KEY && 
+      window.VITE_FIREBASE_PROJECT_ID &&
+      window.VITE_FIREBASE_APP_ID) {
+    return {
+      apiKey: window.VITE_FIREBASE_API_KEY,
+      authDomain: `${window.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+      projectId: window.VITE_FIREBASE_PROJECT_ID,
+      storageBucket: `${window.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+      messagingSenderId: window.VITE_FIREBASE_MESSAGING_SENDER_ID,
+      appId: window.VITE_FIREBASE_APP_ID,
+      measurementId: window.VITE_FIREBASE_MEASUREMENT_ID,
+    };
+  }
+  
+  return null;
+};
+
+const firebaseConfig = getFirebaseConfig();
+const hasFirebaseConfig = !!firebaseConfig;
 
 let app: any = null;
 let auth: any = null;
@@ -15,16 +59,7 @@ let db: any = null;
 let googleProvider: any = null;
 let analytics: any = null;
 
-if (hasFirebaseConfig) {
-  const firebaseConfig = {
-    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-    authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-    storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
-    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-    appId: import.meta.env.VITE_FIREBASE_APP_ID,
-    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
-  };
+if (hasFirebaseConfig && firebaseConfig) {
 
   try {
     app = initializeApp(firebaseConfig);
