@@ -40,6 +40,11 @@ No Firebase Console:
 - ✅ Resolvido: Vite movido para dependencies
 - ✅ NPM_FLAGS configurado para instalar todas as dependências
 
+**Erro: "No matching version found for drizzle-kit"**
+- ✅ Resolvido: Atualizado para versão ^0.31.4
+- ✅ Esbuild atualizado para ^0.25.9
+- ✅ TypeScript atualizado para ^5.9.2
+
 **Erro: "Firebase not initialized"**
 - ✅ Verifique se as variáveis de ambiente estão configuradas
 - ✅ Verifique se o domínio está autorizado no Firebase
