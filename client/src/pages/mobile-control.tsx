@@ -19,6 +19,13 @@ import UserProfile from "@/components/user-profile";
 import type { TimerSession } from "@shared/schema";
 
 export default function MobileControl() {
+  // Limites de configuração
+  const CONFIG_LIMITS = {
+    rounds: { min: 1, max: 20 },
+    roundDuration: { min: 1, max: 60 },
+    restTime: { min: 5, max: 300 }
+  };
+
   const [config, setConfig] = useState({
     rounds: 5,
     roundDuration: 6,
@@ -37,6 +44,22 @@ export default function MobileControl() {
       return defaultValue;
     }
     return Math.max(1, parseInt(value) || defaultValue);
+  };
+
+  // Função para determinar se o treino foi iniciado
+  const isTrainingStarted = () => {
+    return currentSession && (currentSession.isRunning || currentSession.currentTime > 0);
+  };
+
+  // Função para obter o tempo padrão baseado na configuração
+  const getDefaultTime = () => {
+    const roundDuration = configChanged.roundDuration ? config.roundDuration : 6;
+    return formatTime(roundDuration * 60); // Converter minutos para segundos
+  };
+
+  // Função para verificar se todos os campos estão configurados
+  const isConfigComplete = () => {
+    return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
   };
 
   const [timerState, setTimerState] = useState({
@@ -169,13 +192,18 @@ export default function MobileControl() {
   }, [timerState]);
 
   const handleConfigChange = (field: keyof typeof config, delta: number) => {
-    let newValue;
-    if (field === "restTime") {
-      // Rest time is in seconds, minimum 5 seconds
-      newValue = Math.max(5, config.restTime + delta);
+    const limits = CONFIG_LIMITS[field];
+    let currentValue = configChanged[field] ? config[field] : limits.min;
+    
+    // Se o campo não foi alterado ainda, começar com o valor mínimo
+    if (!configChanged[field]) {
+      currentValue = limits.min;
     } else {
-      newValue = Math.max(1, config[field] + delta);
+      currentValue = config[field];
     }
+    
+    // Calcular novo valor respeitando os limites
+    const newValue = Math.max(limits.min, Math.min(limits.max, currentValue + delta));
     
     const newConfig = {
       ...config,
@@ -239,7 +267,7 @@ export default function MobileControl() {
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Rola Atual</div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
-                {currentSession ? getSafeValue(currentSession.currentRound, 1) : 1}
+                {isTrainingStarted() ? getSafeValue(currentSession?.currentRound, 1) : "—"}
               </div>
             </div>
             <div>
@@ -247,13 +275,19 @@ export default function MobileControl() {
                 {currentSession?.isResting ? "Descanso" : "Tempo"}
               </div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
-                {currentSession ? formatTime(getSafeValue(currentSession.currentTime, 0)) : "00:00"}
+                {isTrainingStarted() 
+                  ? formatTime(getSafeValue(currentSession?.currentTime, 0))
+                  : getDefaultTime()
+                }
               </div>
             </div>
             <div>
               <div className="text-xs sm:text-sm text-[#4a4a4f] mb-1">Total</div>
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
-                {currentSession ? getSafeValue(currentSession.rounds, 5) : 5}
+                {isTrainingStarted() 
+                  ? getSafeValue(currentSession?.rounds, 5)
+                  : (configChanged.rounds ? config.rounds : "—")
+                }
               </div>
             </div>
           </div>
@@ -274,8 +308,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("rounds", -1)}
+                  disabled={configChanged.rounds && config.rounds <= CONFIG_LIMITS.rounds.min}
                 >
                   <Minus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -287,8 +322,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("rounds", 1)}
+                  disabled={configChanged.rounds && config.rounds >= CONFIG_LIMITS.rounds.max}
                 >
                   <Plus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -302,8 +338,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("roundDuration", -1)}
+                  disabled={configChanged.roundDuration && config.roundDuration <= CONFIG_LIMITS.roundDuration.min}
                 >
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -315,8 +352,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("roundDuration", 1)}
+                  disabled={configChanged.roundDuration && config.roundDuration >= CONFIG_LIMITS.roundDuration.max}
                 >
                   <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -330,8 +368,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("restTime", -5)}
+                  disabled={configChanged.restTime && config.restTime <= CONFIG_LIMITS.restTime.min}
                 >
                   <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -343,8 +382,9 @@ export default function MobileControl() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                   onClick={() => handleConfigChange("restTime", 5)}
+                  disabled={configChanged.restTime && config.restTime >= CONFIG_LIMITS.restTime.max}
                 >
                   <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
@@ -390,7 +430,7 @@ export default function MobileControl() {
                 handleControl("pause");
               }
             }}
-            disabled={!currentSession || configMutation.isPending || controlMutation.isPending}
+            disabled={!currentSession || !isConfigComplete() || configMutation.isPending || controlMutation.isPending}
             className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {!currentSession ? (
