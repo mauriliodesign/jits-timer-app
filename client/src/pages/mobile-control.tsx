@@ -310,7 +310,7 @@ export default function MobileControl() {
                 mode="countdown"
                 size="large"
                 variant="minimal"
-                color="green"
+                color="white"
                 initialTime={getSafeValue(timerState.currentTime, 0)}
                 isRunning={timerState.isRunning}
                 showControls={false}
@@ -524,9 +524,9 @@ export default function MobileControl() {
         <div className="section-spacing">
           <UnifiedTimer
             mode="clock"
-            size="medium"
+            size="large"
             variant="card"
-            color="blue"
+            color="white"
             showControls={false}
             showLabels={true}
             customLabels={{
