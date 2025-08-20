@@ -41,6 +41,15 @@
       window.VITE_FIREBASE_MESSAGING_SENDER_ID = '743576123702';
       window.VITE_FIREBASE_MEASUREMENT_ID = 'G-7D5J1EMLJ3';
       
+      // Also set as process.env for compatibility
+      window.process = window.process || {};
+      window.process.env = window.process.env || {};
+      window.process.env.VITE_FIREBASE_API_KEY = window.VITE_FIREBASE_API_KEY;
+      window.process.env.VITE_FIREBASE_PROJECT_ID = window.VITE_FIREBASE_PROJECT_ID;
+      window.process.env.VITE_FIREBASE_APP_ID = window.VITE_FIREBASE_APP_ID;
+      window.process.env.VITE_FIREBASE_MESSAGING_SENDER_ID = window.VITE_FIREBASE_MESSAGING_SENDER_ID;
+      window.process.env.VITE_FIREBASE_MEASUREMENT_ID = window.VITE_FIREBASE_MEASUREMENT_ID;
+      
       // Load the React app immediately
       console.log('Jiu-jitsu Timer loading...');
       console.log('Firebase config set:', window.VITE_FIREBASE_API_KEY ? 'OK' : 'MISSING');
@@ -53,13 +62,15 @@
       link.onerror = () => console.error('Failed to load CSS');
       document.head.appendChild(link);
       
-      // Load JavaScript immediately
-      const script = document.createElement('script');
-      script.type = 'module';
-      script.src = '/assets/index-DcwqpY0L.js';
-      script.onload = () => console.log('JavaScript loaded successfully');
-      script.onerror = () => console.error('Failed to load JavaScript');
-      document.head.appendChild(script);
+      // Load JavaScript after a small delay to ensure Firebase config is available
+      setTimeout(() => {
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/assets/index-DcwqpY0L.js';
+        script.onload = () => console.log('JavaScript loaded successfully');
+        script.onerror = () => console.error('Failed to load JavaScript');
+        document.head.appendChild(script);
+      }, 100);
       
       // Check if React app loads after 5 seconds
       setTimeout(() => {
