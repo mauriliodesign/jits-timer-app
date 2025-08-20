@@ -107,25 +107,31 @@ await build({
 - ✅ **Depois:** `const { firebaseStorage } = await import('./firebase-storage.js')`
 - ✅ Import dinâmico compatível com ESM
 
-### **6. Firebase do Servidor**
+### **6. Exclusão do Rollup do Bundle**
+
+- ❌ **Antes:** Rollup incluído no bundle (erro de dependências nativas)
+- ✅ **Depois:** Rollup adicionado aos externals
+- ✅ Evita problemas de dependências específicas da plataforma
+
+### **7. Firebase do Servidor**
 
 - ✅ Criado `server/firebase.ts` específico para servidor
 - ✅ Usa `process.env` em vez de `import.meta.env`
 - ✅ Separado do Firebase do cliente
 
-### **7. Imports de Módulos Corrigidos**
+### **8. Imports de Módulos Corrigidos**
 
 - ❌ **Antes:** `import { ... } from "@shared/schema"`
 - ✅ **Depois:** `import { ... } from "../shared/schema.js"`
 - ✅ Caminhos relativos diretos em vez de alias
 - ✅ Extensões `.js` obrigatórias para ESM
 
-### **8. Mudanças Principais**
+### **9. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **9. Módulos Incluídos no Bundle**
+### **10. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
@@ -136,11 +142,12 @@ await build({
 - ✅ `shared/schema.ts`
 - ✅ `vite.config.ts`
 
-### **10. Módulos Excluídos do Bundle**
+### **11. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
 - ✅ Dependências de desenvolvimento
+- ✅ Rollup e dependências nativas
 
 ## 🚀 Resultado
 
@@ -174,6 +181,10 @@ grep -n "vite.config" dist/index.js
 
 # Verificação do require:
 grep -n "require" dist/index.js
+# (não encontrado - corrigido)
+
+# Verificação do Rollup:
+grep -n "rollup" dist/index.js
 # (não encontrado - corrigido)
 ```
 

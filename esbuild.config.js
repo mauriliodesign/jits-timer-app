@@ -55,7 +55,9 @@ async function buildServer() {
         'tailwindcss',
         'vite',
         '@vitejs/*',
-        'esbuild'
+        'esbuild',
+        'rollup',
+        '@rollup/*'
       ],
       sourcemap: true,
       minify: false,
