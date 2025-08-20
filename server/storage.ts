@@ -1,8 +1,14 @@
 import { type TimerSession, type InsertTimerSession, type AcademyProfile, type InsertAcademyProfile } from "../shared/schema.js";
 import { randomUUID } from "crypto";
 
-// Always use Firebase storage
-const useFirebaseStorage = true;
+// Use Firebase storage in production IF configured, DevStorage otherwise
+const isProduction = process.env.NODE_ENV === "production";
+const hasFirebaseConfig = process.env.VITE_FIREBASE_PROJECT_ID && 
+  process.env.VITE_FIREBASE_API_KEY;
+
+const useFirebaseStorage = isProduction && hasFirebaseConfig;
+
+console.log(`Storage mode: ${useFirebaseStorage ? 'Firebase' : 'Dev'} (prod: ${isProduction}, config: ${hasFirebaseConfig})`);
 
 export interface IStorage {
   getTimerSession(id: string): Promise<TimerSession | undefined>;
@@ -18,11 +24,17 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private firebaseStorage: any = null;
+  private devStorage: any = null;
   private initPromise: Promise<void> | null = null;
 
   constructor() {
-    // Load Firebase storage
-    this.initPromise = this.initFirebaseStorage();
+    if (useFirebaseStorage) {
+      // Load Firebase storage
+      this.initPromise = this.initFirebaseStorage();
+    } else {
+      // Load Dev storage
+      this.initPromise = this.initDevStorage();
+    }
   }
 
   private async initFirebaseStorage() {
@@ -33,6 +45,17 @@ export class MemStorage implements IStorage {
     } catch (error) {
       console.error('Firebase storage is required but not available:', error);
       throw new Error('Firebase storage must be configured');
+    }
+  }
+
+  private async initDevStorage() {
+    try {
+      const { DevStorage } = await import('./dev-storage.js');
+      this.devStorage = new DevStorage();
+      console.log('Dev storage loaded successfully');
+    } catch (error) {
+      console.error('Dev storage failed to load:', error);
+      throw new Error('Dev storage failed to initialize');
     }
   }
 
@@ -56,31 +79,49 @@ export class MemStorage implements IStorage {
   async getCurrentSession(): Promise<TimerSession | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.getCurrentSession();
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.getCurrentSession();
     }
-    
-    return await this.firebaseStorage.getCurrentSession();
   }
 
   async createTimerSession(insertSession: InsertTimerSession): Promise<TimerSession> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.createTimerSession(insertSession);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.createTimerSession(insertSession);
     }
-    
-    return await this.firebaseStorage.createTimerSession(insertSession);
   }
 
   async updateTimerSession(id: string, updates: Partial<TimerSession>): Promise<TimerSession | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.updateTimerSession(id, updates);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.updateTimerSession(id, updates);
     }
-    
-    return await this.firebaseStorage.updateTimerSession(id, updates);
   }
 
   async getAcademyProfile(userId: string): Promise<AcademyProfile | undefined> {

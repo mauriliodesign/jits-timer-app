@@ -23,10 +23,38 @@ export class FirebaseStorage {
   }
 
   async getCurrentSession(): Promise<TimerSession | undefined> {
-    if (!this.currentSessionId) {
-      return undefined;
+    // First, try to get the current session ID
+    if (this.currentSessionId) {
+      const session = await this.getTimerSession(this.currentSessionId);
+      if (session) {
+        return session;
+      }
     }
-    return this.getTimerSession(this.currentSessionId);
+
+    // If no current session, try to get the latest session from Firestore
+    try {
+      const latestSession = await getLatestDocument('timer_sessions');
+      if (latestSession) {
+        this.currentSessionId = latestSession.id;
+        console.log("Found existing session:", latestSession.id);
+        return latestSession as TimerSession;
+      }
+    } catch (error) {
+      console.error('Error getting latest session:', error);
+    }
+
+    // If still no session and in development, create default
+    if (process.env.NODE_ENV === "development") {
+      console.log("Creating default session for development");
+      const defaultSession = await this.createTimerSession({
+        rounds: 5,
+        roundDuration: 6,
+        restTime: 60,
+      });
+      return defaultSession;
+    }
+
+    return undefined;
   }
 
   async createTimerSession(sessionData: InsertTimerSession): Promise<TimerSession> {

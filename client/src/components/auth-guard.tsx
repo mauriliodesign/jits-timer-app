@@ -13,6 +13,12 @@ export default function AuthGuard({ children }: AuthGuardProps) {
   const hasFirebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY && 
     import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here';
 
+  // For development, allow access without Firebase
+  if (!hasFirebaseConfig && import.meta.env.DEV) {
+    console.log("Development mode: Firebase not configured, allowing access");
+    return <>{children}</>;
+  }
+
   if (!hasFirebaseConfig) {
     // If Firebase is not configured, show error
     return (

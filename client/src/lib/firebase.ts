@@ -16,37 +16,55 @@ declare global {
 
 // Check if Firebase config is available (runtime check)
 const getFirebaseConfig = () => {
-  // Try import.meta.env first (for development)
-  if (import.meta.env.VITE_FIREBASE_API_KEY && 
-      import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here' &&
-      import.meta.env.VITE_FIREBASE_PROJECT_ID &&
-      import.meta.env.VITE_FIREBASE_APP_ID) {
+  // Helper to validate config
+  const isValidConfig = (apiKey: string, projectId: string, appId: string) => {
+    return apiKey && 
+           apiKey !== 'your_firebase_api_key_here' && 
+           projectId && 
+           projectId !== 'your_firebase_project_id_here' &&
+           appId &&
+           appId !== 'your_firebase_app_id_here';
+  };
+
+  // Try import.meta.env first (for development and build time)
+  const envApiKey = import.meta.env.VITE_FIREBASE_API_KEY;
+  const envProjectId = import.meta.env.VITE_FIREBASE_PROJECT_ID;
+  const envAppId = import.meta.env.VITE_FIREBASE_APP_ID;
+
+  if (isValidConfig(envApiKey, envProjectId, envAppId)) {
+    console.log('Firebase config from env variables');
     return {
-      apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-      authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-      projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-      storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
+      apiKey: envApiKey,
+      authDomain: `${envProjectId}.firebaseapp.com`,
+      projectId: envProjectId,
+      storageBucket: `${envProjectId}.firebasestorage.app`,
       messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-      appId: import.meta.env.VITE_FIREBASE_APP_ID,
+      appId: envAppId,
       measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
     };
   }
   
-  // Try window variables (for production)
-  if (window.VITE_FIREBASE_API_KEY && 
-      window.VITE_FIREBASE_PROJECT_ID &&
-      window.VITE_FIREBASE_APP_ID) {
-    return {
-      apiKey: window.VITE_FIREBASE_API_KEY,
-      authDomain: `${window.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
-      projectId: window.VITE_FIREBASE_PROJECT_ID,
-      storageBucket: `${window.VITE_FIREBASE_PROJECT_ID}.firebasestorage.app`,
-      messagingSenderId: window.VITE_FIREBASE_MESSAGING_SENDER_ID,
-      appId: window.VITE_FIREBASE_APP_ID,
-      measurementId: window.VITE_FIREBASE_MEASUREMENT_ID,
-    };
+  // Try window variables (for production runtime injection)
+  if (typeof window !== 'undefined') {
+    const winApiKey = (window as any).VITE_FIREBASE_API_KEY;
+    const winProjectId = (window as any).VITE_FIREBASE_PROJECT_ID;
+    const winAppId = (window as any).VITE_FIREBASE_APP_ID;
+
+    if (isValidConfig(winApiKey, winProjectId, winAppId)) {
+      console.log('Firebase config from window variables');
+      return {
+        apiKey: winApiKey,
+        authDomain: `${winProjectId}.firebaseapp.com`,
+        projectId: winProjectId,
+        storageBucket: `${winProjectId}.firebasestorage.app`,
+        messagingSenderId: (window as any).VITE_FIREBASE_MESSAGING_SENDER_ID,
+        appId: winAppId,
+        measurementId: (window as any).VITE_FIREBASE_MEASUREMENT_ID,
+      };
+    }
   }
   
+  console.warn('Firebase configuration not found or invalid');
   return null;
 };
 

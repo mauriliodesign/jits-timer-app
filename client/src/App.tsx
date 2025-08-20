@@ -5,38 +5,42 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import AuthGuard from "@/components/auth-guard";
+import DevAuthGuard from "@/components/dev-auth-guard";
 import MobileControl from "@/pages/mobile-control";
 import TVDisplay from "@/pages/tv-display";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
 function Router() {
+  // Use DevAuthGuard in development, AuthGuard in production
+  const Guard = import.meta.env.DEV ? DevAuthGuard : AuthGuard;
+  
   return (
     <Switch>
       <Route path="/" component={() => (
-        <AuthGuard>
+        <Guard>
           <MobileControl />
-        </AuthGuard>
+        </Guard>
       )} />
       <Route path="/mobile" component={() => (
-        <AuthGuard>
+        <Guard>
           <MobileControl />
-        </AuthGuard>
+        </Guard>
       )} />
       <Route path="/control" component={() => (
-        <AuthGuard>
+        <Guard>
           <MobileControl />
-        </AuthGuard>
+        </Guard>
       )} />
       <Route path="/profile" component={() => (
-        <AuthGuard>
+        <Guard>
           <Profile />
-        </AuthGuard>
+        </Guard>
       )} />
       <Route path="/config" component={() => (
-        <AuthGuard>
+        <Guard>
           <Profile />
-        </AuthGuard>
+        </Guard>
       )} />
       <Route path="/tv" component={TVDisplay} />
       {/* Fallback to 404 */}

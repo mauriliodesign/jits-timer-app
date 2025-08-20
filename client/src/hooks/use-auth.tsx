@@ -32,6 +32,15 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    // For development mode without Firebase, skip auth
+    if (import.meta.env.DEV && !import.meta.env.VITE_FIREBASE_API_KEY) {
+      console.log("Development mode: Skipping Firebase auth");
+      setUser(null);
+      setLoading(false);
+      setInitialized(true);
+      return;
+    }
+
     // Set up auth state listener
     const unsubscribe = onAuthStateChange((user) => {
       setUser(user);

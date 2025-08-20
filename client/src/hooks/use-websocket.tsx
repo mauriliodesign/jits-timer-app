@@ -6,6 +6,14 @@ export function useWebSocket() {
   const [lastMessage, setLastMessage] = useState<WSMessage | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null);
+  
+  // Detect if we're on Vercel (WebSocket might not work)
+  const isVercel = typeof window !== 'undefined' && 
+    (window.location.hostname.includes('vercel.app') || 
+     window.location.hostname.includes('vercel.com'));
+  
+  const usePollingFallback = isVercel;
 
   const connect = () => {
     try {
@@ -59,12 +67,52 @@ export function useWebSocket() {
     }
   };
 
+  const startPolling = () => {
+    if (pollingInterval.current) {
+      clearInterval(pollingInterval.current);
+    }
+
+    // Poll every 2 seconds for timer updates
+    pollingInterval.current = setInterval(async () => {
+      try {
+        const response = await fetch('/api/timer/current');
+        if (response.ok) {
+          const session = await response.json();
+          // Simulate WebSocket message
+          const message: WSMessage = {
+            type: "timer_update",
+            data: {
+              currentTime: session.currentTime,
+              currentRound: session.currentRound,
+              isRunning: session.isRunning,
+              isResting: session.isResting,
+              totalRounds: session.rounds,
+            },
+          };
+          setLastMessage(message);
+          setIsConnected(true);
+        }
+      } catch (error) {
+        console.error("Polling error:", error);
+        setIsConnected(false);
+      }
+    }, 2000);
+  };
+
   useEffect(() => {
-    connect();
+    if (usePollingFallback) {
+      console.log("Using polling fallback for WebSocket");
+      startPolling();
+    } else {
+      connect();
+    }
 
     return () => {
       if (reconnectTimeout.current) {
         clearTimeout(reconnectTimeout.current);
+      }
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current);
       }
       if (ws.current) {
         ws.current.close();

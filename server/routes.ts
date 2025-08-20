@@ -4,11 +4,17 @@ import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage.js";
 import { insertTimerSessionSchema, insertAcademyProfileSchema, wsMessageSchema, type WSMessage } from "../shared/schema.js";
 import { requireAuth, publicRoute, logAuthErrors } from "./middleware/auth.js";
+import { timerEngine } from "./timer-engine.js";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Adicionar middleware de logging de erros de autenticação
   app.use(logAuthErrors);
   
+  // Test route
+  app.get("/api/test", (req, res) => {
+    res.json({ message: "Server is working", env: process.env.NODE_ENV });
+  });
+
   // Timer session routes
   app.get("/api/timer/current", async (req, res) => {
     try {
@@ -24,7 +30,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/timer/config", requireAuth, async (req, res) => {
     try {
+      console.log("Received config request:", req.body);
       const config = insertTimerSessionSchema.parse(req.body);
+      console.log("Parsed config:", config);
       const session = await storage.createTimerSession(config);
       
       // Broadcast config update to all connected clients
@@ -39,7 +47,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(session);
     } catch (error) {
-      res.status(400).json({ message: "Invalid configuration data" });
+      console.error("Config error:", error);
+      res.status(400).json({ message: "Invalid configuration data", error: error.message });
     }
   });
 
@@ -57,6 +66,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       switch (action) {
         case "start":
           updates.isRunning = true;
+          updates.currentTime = updates.currentTime || currentSession.roundDuration * 60;
           break;
         case "pause":
           updates.isRunning = !currentSession.isRunning;
@@ -72,6 +82,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const updatedSession = await storage.updateTimerSession(currentSession.id, updates);
       
       if (updatedSession) {
+        // Start/stop timer engine based on action
+        if (action === "start" && updatedSession.isRunning) {
+          timerEngine.startTimer(updatedSession.id);
+        } else if (action === "pause" || action === "reset") {
+          timerEngine.stopTimer(updatedSession.id);
+        }
+
         // Broadcast control action to all connected clients
         broadcastMessage({
           type: "timer_control",
