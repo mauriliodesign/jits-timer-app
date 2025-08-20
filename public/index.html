@@ -34,45 +34,20 @@
     <div class="loading">🥋 Jiu-jitsu Timer</div>
     <div class="status">Carregando...</div>
     <script>
-      // Simple loading page
+      // Load the React app immediately
       console.log('Jiu-jitsu Timer loading...');
       
-      // Check if we're in development or production
-      const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      // Load CSS first
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/assets/index-cpruR9Ei.css';
+      document.head.appendChild(link);
       
-      if (isDev) {
-        // In development, load the full app
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = '/src/main.tsx';
-        document.head.appendChild(script);
-      } else {
-        // In production, show a message for now
-        document.querySelector('.status').textContent = 'Carregando aplicação...';
-        
-        // Try to load the app after a delay
-        setTimeout(() => {
-          try {
-            const script = document.createElement('script');
-            script.type = 'module';
-            script.src = '/assets/index-DcwqpY0L.js';
-            script.onerror = () => {
-              console.log('Failed to load app, showing maintenance message');
-            };
-            document.head.appendChild(script);
-            
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = '/assets/index-cpruR9Ei.css';
-            link.onerror = () => {
-              console.log('Failed to load CSS');
-            };
-            document.head.appendChild(link);
-          } catch (error) {
-            console.log('Error loading app:', error);
-          }
-        }, 2000);
-      }
+      // Load JavaScript immediately
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = '/assets/index-DcwqpY0L.js';
+      document.head.appendChild(script);
     </script>
   </body>
 </html>
