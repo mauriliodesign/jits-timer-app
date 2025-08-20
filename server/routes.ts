@@ -3,8 +3,12 @@ import { createServer, type Server } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { insertTimerSessionSchema, insertAcademyProfileSchema, wsMessageSchema, type WSMessage } from "@shared/schema";
+import { requireAuth, publicRoute, logAuthErrors } from "./middleware/auth";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Adicionar middleware de logging de erros de autenticação
+  app.use(logAuthErrors);
+  
   // Timer session routes
   app.get("/api/timer/current", async (req, res) => {
     try {
@@ -18,7 +22,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/timer/config", async (req, res) => {
+  app.post("/api/timer/config", requireAuth, async (req, res) => {
     try {
       const config = insertTimerSessionSchema.parse(req.body);
       const session = await storage.createTimerSession(config);
@@ -39,7 +43,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/timer/control", async (req, res) => {
+  app.post("/api/timer/control", requireAuth, async (req, res) => {
     try {
       const { action } = req.body;
       const currentSession = await storage.getCurrentSession();
@@ -109,7 +113,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/profile/:userId", async (req, res) => {
+  app.get("/api/profile/:userId", requireAuth, async (req, res) => {
     try {
       const profile = await storage.getAcademyProfile(req.params.userId);
       if (!profile) {
@@ -121,7 +125,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/profile", async (req, res) => {
+  app.post("/api/profile", requireAuth, async (req, res) => {
     try {
       const profileData = insertAcademyProfileSchema.parse(req.body);
       const profile = await storage.createAcademyProfile(profileData);
@@ -131,7 +135,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/profile/:userId", async (req, res) => {
+  app.put("/api/profile/:userId", requireAuth, async (req, res) => {
     try {
       const updates = req.body;
       const profile = await storage.updateAcademyProfile(req.params.userId, updates);
