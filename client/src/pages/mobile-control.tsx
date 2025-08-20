@@ -291,7 +291,7 @@ export default function MobileControl() {
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {isTrainingStarted() 
                   ? formatTime(getSafeValue(currentSession?.currentTime, 0))
-                  : getDefaultTime()
+                  : "00:00"
                 }
               </div>
             </div>
@@ -300,7 +300,7 @@ export default function MobileControl() {
               <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                 {isTrainingStarted() 
                   ? getSafeValue(currentSession?.rounds, 5)
-                  : (configChanged.rounds ? config.rounds : "—")
+                  : "—"
                 }
               </div>
             </div>
