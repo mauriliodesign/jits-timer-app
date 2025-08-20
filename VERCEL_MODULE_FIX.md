@@ -101,25 +101,31 @@ await build({
 - ❌ **Antes:** `import viteConfig from "../vite.config"`
 - ✅ **Depois:** `import viteConfig from "../vite.config.js"`
 
-### **5. Firebase do Servidor**
+### **5. Correção do require() para ESM**
+
+- ❌ **Antes:** `const { firebaseStorage } = require('./firebase-storage.js')`
+- ✅ **Depois:** `const { firebaseStorage } = await import('./firebase-storage.js')`
+- ✅ Import dinâmico compatível com ESM
+
+### **6. Firebase do Servidor**
 
 - ✅ Criado `server/firebase.ts` específico para servidor
 - ✅ Usa `process.env` em vez de `import.meta.env`
 - ✅ Separado do Firebase do cliente
 
-### **6. Imports de Módulos Corrigidos**
+### **7. Imports de Módulos Corrigidos**
 
 - ❌ **Antes:** `import { ... } from "@shared/schema"`
 - ✅ **Depois:** `import { ... } from "../shared/schema.js"`
 - ✅ Caminhos relativos diretos em vez de alias
 - ✅ Extensões `.js` obrigatórias para ESM
 
-### **7. Mudanças Principais**
+### **8. Mudanças Principais**
 
 - ❌ **Antes:** `packages: 'external'` (excluía tudo)
 - ✅ **Depois:** `external: [...]` (lista específica)
 
-### **8. Módulos Incluídos no Bundle**
+### **9. Módulos Incluídos no Bundle**
 
 - ✅ `server/routes.ts`
 - ✅ `server/storage.ts`
@@ -130,7 +136,7 @@ await build({
 - ✅ `shared/schema.ts`
 - ✅ `vite.config.ts`
 
-### **9. Módulos Excluídos do Bundle**
+### **10. Módulos Excluídos do Bundle**
 
 - ✅ Dependências externas (firebase, express, etc.)
 - ✅ Módulos do Node.js
@@ -165,6 +171,10 @@ grep -n "@shared/schema" dist/index.js
 
 grep -n "vite.config" dist/index.js
 # 7868:// vite.config.ts
+
+# Verificação do require:
+grep -n "require" dist/index.js
+# (não encontrado - corrigido)
 ```
 
 ### **Deploy Vercel:**
