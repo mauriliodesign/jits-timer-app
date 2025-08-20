@@ -28,22 +28,30 @@ A aplicação agora suporta armazenamento de dados no Firebase Firestore, com fa
 
 ### 2. **Regras de Segurança do Firestore**
 
+**⚠️ IMPORTANTE:** Use estas regras para desenvolvimento/teste. Para produção, configure regras mais restritivas.
+
 ```javascript
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Timer sessions - qualquer usuário autenticado pode ler/escrever
+    // Timer sessions - permitir leitura e escrita para todos (modo de teste)
     match /timer_sessions/{sessionId} {
-      allow read, write: if request.auth != null;
+      allow read, write: if true;
     }
     
-    // Academy profiles - usuário só pode acessar seu próprio perfil
+    // Academy profiles - permitir leitura e escrita para todos (modo de teste)
     match /academy_profiles/{userId} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+      allow read, write: if true;
     }
   }
 }
 ```
+
+**Para aplicar as regras:**
+1. Vá para **Firestore Database** no Firebase Console
+2. Clique na aba **"Rules"**
+3. Substitua o conteúdo pelas regras acima
+4. Clique em **"Publish"**
 
 ### 3. **Variáveis de Ambiente**
 
