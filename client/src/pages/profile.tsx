@@ -127,57 +127,58 @@ export default function Profile() {
 
   return (
     <div className="min-h-screen bg-[#121214] text-white">
-      <div className="container mx-auto px-4 py-6 max-w-2xl">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl lg:max-w-6xl">
         {/* Header */}
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-4 sm:mb-6">
           <Link href="/control">
-            <Button variant="outline" size="sm" className="mr-4 bg-[#1e1e21] border-[#59FF3A] hover:bg-[#59FF3A] hover:text-[#121214] text-[#59FF3A]">
+            <Button variant="outline" size="sm" className="mr-3 sm:mr-4 bg-[#1e1e21] border-[#59FF3A] hover:bg-[#59FF3A] hover:text-[#121214] text-[#59FF3A]">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
           </Link>
-          <h1 className="text-2xl lg:text-3xl font-bold">Configurações</h1>
+          <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Configurações</h1>
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <Card className="bg-[#17171a] border-[#1e1e21]">
-            <CardHeader>
-              <CardTitle className="flex items-center text-white">
-                <Building2 className="h-5 w-5 mr-2 text-[#59FF3A]" />
-                Informações da Academia
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+          <form onSubmit={handleSubmit}>
+            <Card className="bg-[#17171a] border-[#1e1e21] h-fit">
+              <CardHeader>
+                <CardTitle className="flex items-center text-white">
+                  <Building2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-[#59FF3A]" />
+                  <span className="text-base sm:text-lg">Informações da Academia</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4 sm:space-y-6">
               {/* Current User Info */}
-              <div className="flex items-center space-x-4 p-4 bg-[#1e1e21] rounded-lg">
-                <Avatar className="h-12 w-12">
+              <div className="flex items-center space-x-3 sm:space-x-4 p-3 sm:p-4 bg-[#1e1e21] rounded-lg">
+                <Avatar className="h-10 w-10 sm:h-12 sm:w-12">
                   <AvatarImage src={user.photoURL || ""} />
                   <AvatarFallback>
                     {user.displayName?.charAt(0) || user.email?.charAt(0) || "U"}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="font-medium text-white">{user.displayName || user.email}</p>
-                  <p className="text-sm text-[#5a5a60]">Instrutor</p>
+                  <p className="font-medium text-white text-sm sm:text-base">{user.displayName || user.email}</p>
+                  <p className="text-xs sm:text-sm text-[#5a5a60]">Instrutor</p>
                 </div>
               </div>
 
               {/* Academy Logo */}
               <div className="space-y-2">
-                <Label htmlFor="logoUrl" className="text-white">Logo da Academia (URL)</Label>
-                <div className="flex items-center space-x-4">
+                <Label htmlFor="logoUrl" className="text-white text-sm sm:text-base">Logo da Academia (URL)</Label>
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <Input
                     id="logoUrl"
                     value={formData.logoUrl}
                     onChange={(e) => setFormData(prev => ({ ...prev, logoUrl: e.target.value }))}
                     placeholder="https://exemplo.com/logo.png"
-                    className="bg-[#1e1e21] border-[#252529] text-white"
+                    className="bg-[#1e1e21] border-[#252529] text-white text-sm sm:text-base"
                   />
                   {formData.logoUrl && (
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0">
                       <AvatarImage src={formData.logoUrl} />
                       <AvatarFallback>
-                        <Building2 className="h-6 w-6" />
+                        <Building2 className="h-5 w-5 sm:h-6 sm:w-6" />
                       </AvatarFallback>
                     </Avatar>
                   )}
@@ -186,26 +187,26 @@ export default function Profile() {
 
               {/* Academy Name */}
               <div className="space-y-2">
-                <Label htmlFor="academyName" className="text-white">Nome da Academia</Label>
+                <Label htmlFor="academyName" className="text-white text-sm sm:text-base">Nome da Academia</Label>
                 <Input
                   id="academyName"
                   value={formData.academyName}
                   onChange={(e) => setFormData(prev => ({ ...prev, academyName: e.target.value }))}
                   placeholder="Nome da sua academia"
-                  className="bg-[#1e1e21] border-[#252529] text-white"
+                  className="bg-[#1e1e21] border-[#252529] text-white text-sm sm:text-base"
                   required
                 />
               </div>
 
               {/* Instructor Name */}
               <div className="space-y-2">
-                <Label htmlFor="instructorName" className="text-white">Nome do Instrutor</Label>
+                <Label htmlFor="instructorName" className="text-white text-sm sm:text-base">Nome do Instrutor</Label>
                 <Input
                   id="instructorName"
                   value={formData.instructorName}
                   onChange={(e) => setFormData(prev => ({ ...prev, instructorName: e.target.value }))}
                   placeholder="Seu nome como instrutor"
-                  className="bg-[#1e1e21] border-[#252529] text-white"
+                  className="bg-[#1e1e21] border-[#252529] text-white text-sm sm:text-base"
                   required
                 />
               </div>
@@ -214,18 +215,18 @@ export default function Profile() {
               <Button
                 type="submit"
                 disabled={createProfileMutation.isPending || updateProfileMutation.isPending}
-                className="w-full h-12 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214]"
+                className="w-full h-11 sm:h-12 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-sm sm:text-base"
               >
                 {createProfileMutation.isPending || updateProfileMutation.isPending ? (
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
                 ) : profile ? (
                   <>
-                    <Trophy className="mr-2 h-5 w-5" />
+                    <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Atualizar Perfil
                   </>
                 ) : (
                   <>
-                    <User className="mr-2 h-5 w-5" />
+                    <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
                     Criar Perfil
                   </>
                 )}
@@ -235,27 +236,26 @@ export default function Profile() {
         </form>
 
         {/* Sound Tests Section */}
-        <div className="mt-8">
-          <Card className="bg-[#17171a] border-[#1e1e21]">
-            <CardHeader>
-              <CardTitle className="flex items-center text-white">
-                <Volume2 className="h-5 w-5 mr-2 text-[#59FF3A]" />
-                Testes de Som
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
+        <Card className="bg-[#17171a] border-[#1e1e21]">
+          <CardHeader>
+            <CardTitle className="flex items-center text-white">
+              <Volume2 className="h-4 w-4 sm:h-5 sm:w-5 mr-2 text-[#59FF3A]" />
+              <span className="text-base sm:text-lg">Testes de Som</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
                 <Button
                   onClick={() => {
                     enableAudio();
                     playStartRoundSound();
                   }}
                   variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-16"
+                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
                 >
                   <div className="text-center">
-                    <div className="text-lg mb-1">🔊</div>
-                    <div className="text-sm">Início de Round</div>
+                    <div className="text-base sm:text-lg mb-1">🔊</div>
+                    <div className="text-xs sm:text-sm">Início de Round</div>
                   </div>
                 </Button>
                 <Button
@@ -264,11 +264,11 @@ export default function Profile() {
                     playEndRoundSound();
                   }}
                   variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-16"
+                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
                 >
                   <div className="text-center">
-                    <div className="text-lg mb-1">🔊</div>
-                    <div className="text-sm">Fim de Round</div>
+                    <div className="text-base sm:text-lg mb-1">🔊</div>
+                    <div className="text-xs sm:text-sm">Fim de Round</div>
                   </div>
                 </Button>
                 <Button
@@ -277,11 +277,11 @@ export default function Profile() {
                     playRestStartSound();
                   }}
                   variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-16"
+                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
                 >
                   <div className="text-center">
-                    <div className="text-lg mb-1">🔊</div>
-                    <div className="text-sm">Início de Descanso</div>
+                    <div className="text-base sm:text-lg mb-1">🔊</div>
+                    <div className="text-xs sm:text-sm">Início de Descanso</div>
                   </div>
                 </Button>
                 <Button
@@ -290,11 +290,11 @@ export default function Profile() {
                     playTrainingCompleteSound();
                   }}
                   variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-16"
+                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
                 >
                   <div className="text-center">
-                    <div className="text-lg mb-1">🔊</div>
-                    <div className="text-sm">Conclusão do Treino</div>
+                    <div className="text-base sm:text-lg mb-1">🔊</div>
+                    <div className="text-xs sm:text-sm">Conclusão do Treino</div>
                   </div>
                 </Button>
               </div>
