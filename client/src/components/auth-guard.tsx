@@ -9,20 +9,20 @@ interface AuthGuardProps {
 export default function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading, initialized } = useAuth();
 
-  // For local development, bypass authentication
-  const isLocalDevelopment = import.meta.env.DEV || window.location.hostname === 'localhost';
-  
-  if (isLocalDevelopment) {
-    return <>{children}</>;
-  }
-
-  // In production, check if Firebase is properly configured
+  // Check if Firebase is properly configured
   const hasFirebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY && 
     import.meta.env.VITE_FIREBASE_API_KEY !== 'your_firebase_api_key_here';
 
   if (!hasFirebaseConfig) {
-    // If Firebase is not configured, allow access (fallback for development)
-    return <>{children}</>;
+    // If Firebase is not configured, show error
+    return (
+      <div className="min-h-screen bg-[#121214] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-white text-2xl mb-4">Erro de Configuração</h1>
+          <p className="text-[#5a5a60]">Firebase não está configurado corretamente.</p>
+        </div>
+      </div>
+    );
   }
 
   // Show loading spinner while checking auth state
