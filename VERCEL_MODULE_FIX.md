@@ -162,6 +162,9 @@ grep -n "shared/schema" dist/index.js
 
 grep -n "@shared/schema" dist/index.js
 # (não encontrado - corrigido)
+
+grep -n "vite.config" dist/index.js
+# 7868:// vite.config.ts
 ```
 
 ### **Deploy Vercel:**
