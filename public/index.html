@@ -41,13 +41,27 @@
       const link = document.createElement('link');
       link.rel = 'stylesheet';
       link.href = '/assets/index-cpruR9Ei.css';
+      link.onload = () => console.log('CSS loaded successfully');
+      link.onerror = () => console.error('Failed to load CSS');
       document.head.appendChild(link);
       
       // Load JavaScript immediately
       const script = document.createElement('script');
       script.type = 'module';
       script.src = '/assets/index-DcwqpY0L.js';
+      script.onload = () => console.log('JavaScript loaded successfully');
+      script.onerror = () => console.error('Failed to load JavaScript');
       document.head.appendChild(script);
+      
+      // Check if React app loads after 5 seconds
+      setTimeout(() => {
+        if (document.querySelector('#root').children.length === 0) {
+          console.log('React app not loaded, showing fallback');
+          document.querySelector('.status').textContent = 'Erro ao carregar aplicação. Recarregue a página.';
+        } else {
+          console.log('React app loaded successfully');
+        }
+      }, 5000);
     </script>
   </body>
 </html>
