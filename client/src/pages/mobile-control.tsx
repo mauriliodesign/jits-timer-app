@@ -184,9 +184,9 @@ export default function MobileControl() {
 
   return (
     <div className="min-h-screen bg-[#121214] text-white">
-      <div className="container mx-auto px-4 py-6 max-w-4xl">
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 max-w-4xl">
         {/* Header with User Profile */}
-        <div className="flex flex-row items-center justify-between mb-4 gap-4">
+        <div className="flex flex-row items-center justify-between mb-4 sm:mb-6 gap-2 sm:gap-4">
           <div className="flex items-center">
             <svg width="138" height="15" viewBox="0 0 1381 149" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-7 sm:h-9 lg:h-11">
               <path d="M1178.18 145.6L1174.98 130.4H1174.58C1165.58 143.4 1150.98 149 1133.58 149C1114.38 149 1097.98 142.4 1086.38 130C1073.18 116 1066.58 96.8 1066.58 74.6C1066.58 32.4 1093.38 0 1137.58 0C1174.98 0 1198.58 19.4 1203.18 51.2H1162.78C1160.58 42 1151.98 34.4 1139.18 34.4C1119.18 34.4 1108.98 51.2 1108.98 74.6C1108.98 98 1120.58 115.4 1140.78 115.4C1155.98 115.4 1163.38 107.2 1165.98 97.6H1146.98V68H1205.98V145.6H1178.18Z" fill="#59FF3A"/>
@@ -208,62 +208,62 @@ export default function MobileControl() {
 
         {/* Current Status Display */}
         {currentSession && (
-          <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-4 lg:p-6 mb-6 lg:mb-8">
-            <div className="grid grid-cols-3 gap-4 text-center">
+          <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 lg:mb-8">
+            <div className="grid grid-cols-3 gap-2 sm:gap-4 text-center">
               <div>
-                <div className="text-2xl lg:text-3xl font-bold text-white font-mono">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
                   {currentSession.currentRound}
                 </div>
-                <div className="text-xs lg:text-sm text-[#4a4a4f]">Rola Atual</div>
+                <div className="text-xs sm:text-sm text-[#4a4a4f]">Rola Atual</div>
               </div>
               <div>
-                <div className="text-3xl lg:text-5xl font-bold text-white font-mono">
+                <div className="text-2xl sm:text-3xl lg:text-5xl font-bold text-white font-mono">
                   {formatTime(currentSession.currentTime)}
                 </div>
-                <div className="text-xs lg:text-sm text-[#4a4a4f]">
+                <div className="text-xs sm:text-sm text-[#4a4a4f]">
                   {currentSession.isResting ? "Descanso" : "Tempo"}
                 </div>
               </div>
               <div>
-                <div className="text-2xl lg:text-3xl font-bold text-white font-mono">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-white font-mono">
                   {currentSession.rounds}
                 </div>
-                <div className="text-xs lg:text-sm text-[#4a4a4f]">Total</div>
+                <div className="text-xs sm:text-sm text-[#4a4a4f]">Total</div>
               </div>
             </div>
           </div>
         )}
 
         {/* Configuration Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6 lg:mb-8">
-          <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-4 lg:p-6">
-            <div className="flex items-center mb-4 lg:mb-6">
-              <Settings className="h-5 w-5 text-[#59FF3A] mr-2" />
-              <h2 className="text-lg lg:text-xl font-semibold">Configurações</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6 lg:mb-8">
+          <div className="bg-[#17171a] border border-[#1e1e21] rounded-2xl p-3 sm:p-4 lg:p-6">
+            <div className="flex items-center mb-3 sm:mb-4 lg:mb-6">
+              <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-[#59FF3A] mr-2" />
+              <h2 className="text-base sm:text-lg lg:text-xl font-semibold">Configurações</h2>
             </div>
             
             {/* Number of Rounds */}
-            <div className="mb-4 lg:mb-6">
-              <label className="block text-sm font-medium mb-3 text-[#5a5a60]">Número de Rolas</label>
-              <div className="flex items-center justify-center space-x-4">
+            <div className="mb-3 sm:mb-4 lg:mb-6">
+              <label className="block text-xs sm:text-sm font-medium mb-2 sm:mb-3 text-[#5a5a60]">Número de Rolas</label>
+              <div className="flex items-center justify-center space-x-2 sm:space-x-4">
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
                   onClick={() => handleConfigChange("rounds", -1)}
                 >
-                  <Minus className="h-4 w-4 lg:h-5 lg:w-5" />
+                  <Minus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
-                <div className="w-12 lg:w-16 text-center">
-                  <span className="text-2xl lg:text-3xl font-bold font-mono">{config.rounds}</span>
+                <div className="w-10 sm:w-12 lg:w-16 text-center">
+                  <span className="text-xl sm:text-2xl lg:text-3xl font-bold font-mono">{config.rounds}</span>
                 </div>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
+                  className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white"
                   onClick={() => handleConfigChange("rounds", 1)}
                 >
-                  <Plus className="h-4 w-4 lg:h-5 lg:w-5" />
+                  <Plus className="h-3 w-3 sm:h-4 sm:w-4 lg:h-5 lg:w-5" />
                 </Button>
               </div>
             </div>

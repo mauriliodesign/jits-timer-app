@@ -144,27 +144,27 @@ export default function TVDisplay() {
     <div className="min-h-screen bg-[#121214] text-white flex flex-col relative">
       {/* Academy Header */}
       {academyProfile && (
-        <div className="w-full bg-transparent px-6 py-4">
+        <div className="w-full bg-transparent px-3 sm:px-6 py-2 sm:py-4">
           <div className="flex items-center justify-between max-w-7xl mx-auto">
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {academyProfile.logoUrl ? (
-                <Avatar className="h-[88px] w-[88px]">
+                <Avatar className="h-12 w-12 sm:h-16 sm:w-16 lg:h-[88px] lg:w-[88px]">
                   <AvatarImage src={academyProfile.logoUrl} alt={academyProfile.academyName} />
                   <AvatarFallback className="bg-[#59FF3A] text-[#121214]">
-                    <Building2 className="h-8 w-8" />
+                    <Building2 className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8" />
                   </AvatarFallback>
                 </Avatar>
               ) : (
-                <div className="h-[88px] w-[88px] rounded-full bg-[#59FF3A] flex items-center justify-center">
-                  <Building2 className="h-8 w-8 text-white" />
+                <div className="h-12 w-12 sm:h-16 sm:w-16 lg:h-[88px] lg:w-[88px] rounded-full bg-[#59FF3A] flex items-center justify-center">
+                  <Building2 className="h-4 w-4 sm:h-6 sm:w-6 lg:h-8 lg:w-8 text-white" />
                 </div>
               )}
               <div>
-                <h1 className="text-2xl font-semibold text-white">{academyProfile.academyName}</h1>
+                <h1 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">{academyProfile.academyName}</h1>
               </div>
             </div>
             <div className="text-right">
-              <p className="text-3xl md:text-4xl lg:text-5xl font-mono font-bold text-white">
+              <p className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-mono font-bold text-white">
                 {currentTime.toLocaleTimeString("pt-BR", { 
                   hour: "2-digit", 
                   minute: "2-digit",
@@ -179,20 +179,20 @@ export default function TVDisplay() {
 
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center px-8">
+      <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8">
 
         <div className="text-center max-w-4xl mx-auto w-full">
         {/* Connection Status */}
-        <div className="mb-4 flex justify-center">
-          <div className="flex items-center text-lg text-[#5a5a60]">
+        <div className="mb-2 sm:mb-4 flex justify-center">
+          <div className="flex items-center text-sm sm:text-lg text-[#5a5a60]">
             {isConnected ? (
               <>
-                <div className="w-3 h-3 rounded-full bg-[#59FF3A] mr-3 animate-pulse"></div>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#59FF3A] mr-2 sm:mr-3 animate-pulse"></div>
                 <span>Conectado</span>
               </>
             ) : (
               <>
-                <div className="w-3 h-3 rounded-full bg-red-500 mr-3"></div>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 mr-2 sm:mr-3"></div>
                 <span>Desconectado</span>
               </>
             )}
@@ -200,21 +200,21 @@ export default function TVDisplay() {
         </div>
 
         {/* Status Message */}
-        <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl text-[#5a5a60] mb-2">
+        <div className="mb-4 sm:mb-8">
+          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#5a5a60] mb-2">
             {getStatusMessage()}
           </h1>
         </div>
 
         {/* Main Timer Display */}
-        <div className="mb-12">
-          <div className="text-9xl md:text-[10rem] lg:text-[14.4rem] font-mono font-bold text-white mb-4 leading-none tracking-wider">
+        <div className="mb-6 sm:mb-12">
+          <div className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[14.4rem] font-mono font-bold text-white mb-2 sm:mb-4 leading-none tracking-wider">
             {formatTime(timerState.currentTime)}
           </div>
           
           {/* Progress Bar */}
-          <div className="w-full max-w-2xl mx-auto mb-8">
-            <div className="h-2 bg-[#2a2a2e] rounded-full overflow-hidden">
+          <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-8">
+            <div className="h-1 sm:h-2 bg-[#2a2a2e] rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all duration-1000 ease-linear ${
                   timerState.isResting ? "bg-orange-500" : "bg-[#59FF3A]"
@@ -224,7 +224,7 @@ export default function TVDisplay() {
                 }}
               ></div>
             </div>
-            <div className="flex justify-between text-sm text-[#5a5a60] mt-2">
+            <div className="flex justify-between text-xs sm:text-sm text-[#5a5a60] mt-1 sm:mt-2">
               <span>Progresso da {timerState.isResting ? "rola" : "rola"}</span>
               <span>{Math.round(progressPercentage)}%</span>
             </div>
@@ -232,11 +232,11 @@ export default function TVDisplay() {
         </div>
 
                 {/* Round Indicators */}
-        <div className="flex justify-center space-x-4 mb-8">
+        <div className="flex justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-8">
           {Array.from({ length: timerState.totalRounds }).map((_, index) => (
             <div
               key={index}
-              className={`w-8 h-8 rounded-full transition-all duration-300 flex items-center justify-center font-bold text-sm ${
+              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full transition-all duration-300 flex items-center justify-center font-bold text-xs sm:text-sm ${
                 index < timerState.currentRound - 1
                   ? "bg-[#59FF3A] text-[#121214]"
                   : index === timerState.currentRound - 1

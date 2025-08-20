@@ -43,16 +43,14 @@ export class FirebaseStorage {
       console.error('Error getting latest session:', error);
     }
 
-    // If still no session and in development, create default
-    if (process.env.NODE_ENV === "development") {
-      console.log("Creating default session for development");
-      const defaultSession = await this.createTimerSession({
-        rounds: 5,
-        roundDuration: 6,
-        restTime: 60,
-      });
-      return defaultSession;
-    }
+    // If still no session, create default (both dev and prod)
+    console.log("Creating default session");
+    const defaultSession = await this.createTimerSession({
+      rounds: 5,
+      roundDuration: 6,
+      restTime: 60,
+    });
+    return defaultSession;
 
     return undefined;
   }

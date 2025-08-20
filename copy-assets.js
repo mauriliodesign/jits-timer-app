@@ -6,9 +6,15 @@ try {
   // Create assets directory if it doesn't exist
   mkdirSync('public/assets', { recursive: true });
   
-  // Copy CSS file
-  copyFileSync('dist/public/assets/index-cpruR9Ei.css', 'public/assets/index-cpruR9Ei.css');
-  console.log('✅ CSS file copied to public/assets/');
+  // Copy CSS file (get the actual filename from dist)
+  const cssFiles = readdirSync('dist/public/assets').filter(file => file.endsWith('.css'));
+  if (cssFiles.length > 0) {
+    const cssFile = cssFiles[0];
+    copyFileSync(`dist/public/assets/${cssFile}`, `public/assets/${cssFile}`);
+    console.log(`✅ CSS file copied to public/assets/${cssFile}`);
+  } else {
+    throw new Error('No CSS file found in dist/public/assets/');
+  }
   
   // Copy JS file (get the actual filename from dist)
   const jsFiles = readdirSync('dist/public/assets').filter(file => file.endsWith('.js'));
