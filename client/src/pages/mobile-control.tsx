@@ -342,7 +342,7 @@ export default function MobileControl() {
                                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("rounds", -1)}
                     disabled={configChanged.rounds && config.rounds <= CONFIG_LIMITS.rounds.min}
                   >
@@ -356,7 +356,7 @@ export default function MobileControl() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("rounds", 1)}
                     disabled={configChanged.rounds && config.rounds >= CONFIG_LIMITS.rounds.max}
                   >
@@ -372,7 +372,7 @@ export default function MobileControl() {
                                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("roundDuration", -1)}
                     disabled={configChanged.roundDuration && config.roundDuration <= CONFIG_LIMITS.roundDuration.min}
                   >
@@ -386,7 +386,7 @@ export default function MobileControl() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("roundDuration", 1)}
                     disabled={configChanged.roundDuration && config.roundDuration >= CONFIG_LIMITS.roundDuration.max}
                   >
@@ -402,7 +402,7 @@ export default function MobileControl() {
                                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("restTime", -5)}
                     disabled={configChanged.restTime && config.restTime <= CONFIG_LIMITS.restTime.min}
                   >
@@ -416,7 +416,7 @@ export default function MobileControl() {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="btn-control"
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white disabled:opacity-50"
                     onClick={() => handleConfigChange("restTime", 5)}
                     disabled={configChanged.restTime && config.restTime >= CONFIG_LIMITS.restTime.max}
                   >
@@ -444,7 +444,7 @@ export default function MobileControl() {
             <div className="space-y-3">
               <Button
                 onClick={() => window.open('/tv', '_blank')}
-                className="btn-secondary"
+                className="w-full h-12 lg:h-14 bg-white/8 hover:bg-white/16 text-sm lg:text-base font-medium rounded-xl border border-white/20"
               >
                 <Monitor className="mr-2 h-4 w-4 lg:h-5 lg:w-5" />
                 Abrir Tela da TV
@@ -478,7 +478,7 @@ export default function MobileControl() {
               }
             }}
             disabled={!currentSession || (!isConfigComplete() && !isTrainingStarted()) || configMutation.isPending || controlMutation.isPending}
-            className="btn-primary"
+            className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {!currentSession ? (
               <>
@@ -510,7 +510,7 @@ export default function MobileControl() {
               resetAll();
             }}
             disabled={!currentSession || controlMutation.isPending}
-            className="btn-secondary"
+            className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <RotateCcw className="mr-2 h-5 w-5" />
             Resetar
