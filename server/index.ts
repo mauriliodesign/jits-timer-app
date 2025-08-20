@@ -13,8 +13,18 @@ if (process.env.NODE_ENV === "development") {
   log = (message: string) => console.log(message);
   serveStatic = (app: any) => {
     // Static file serving for production
-    app.use(express.static("dist/public"));
     app.use(express.static("public"));
+    app.use(express.static("dist/public"));
+    
+    // Serve assets directly
+    app.get('/assets/:file', (req, res) => {
+      const file = req.params.file;
+      const publicPath = `public/assets/${file}`;
+      
+      // Try public folder first
+      res.sendFile(publicPath, { root: "." });
+    });
+    
     app.use("*", (_req: any, res: any) => {
       res.sendFile("public/index.html", { root: "." });
     });
