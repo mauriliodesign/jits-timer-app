@@ -347,65 +347,50 @@ export default function MobileControl() {
 
         {/* Control Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 lg:mb-8">
-          {/* Start button - show when timer is not running */}
-          {currentSession && !currentSession.isRunning && (
+          {/* Main Control Button - Iniciar/Pausar */}
+          {currentSession && (
             <Button
               onClick={() => {
-                applyConfig();
-                handleControl("start");
+                if (!currentSession.isRunning) {
+                  // Se não está rodando, aplicar config e iniciar
+                  applyConfig();
+                  handleControl("start");
+                } else {
+                  // Se está rodando, pausar
+                  handleControl("pause");
+                }
               }}
               disabled={configMutation.isPending || controlMutation.isPending}
-              className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl"
+              className={`w-full h-14 lg:h-16 text-base lg:text-lg font-bold rounded-xl ${
+                currentSession.isRunning 
+                  ? "bg-orange-600 hover:bg-orange-700 text-white" 
+                  : "bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214]"
+              }`}
             >
-              <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-              Iniciar Treino
+              {currentSession.isRunning ? (
+                <>
+                  <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                  Pausar o Treino
+                </>
+              ) : (
+                <>
+                  <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
+                  Iniciar Treino
+                </>
+              )}
             </Button>
           )}
           
-          {/* Control buttons for active/paused session */}
-          {currentSession && currentSession.isRunning && (
-            <>
-              <Button
-                onClick={() => handleControl("pause")}
-                disabled={controlMutation.isPending}
-                className="h-14 lg:h-16 bg-orange-600 hover:bg-orange-700 rounded-xl"
-              >
-                <Pause className="mr-2 h-5 w-5" />
-                Pausar
-              </Button>
-              
-              <Button
-                onClick={() => handleControl("reset")}
-                disabled={controlMutation.isPending}
-                className="h-14 lg:h-16 bg-red-600 hover:bg-red-700 rounded-xl"
-              >
-                <RotateCcw className="mr-2 h-5 w-5" />
-                Resetar
-              </Button>
-            </>
-          )}
-
-          {/* Continue button when paused */}
-          {currentSession && !currentSession.isRunning && currentSession.currentRound > 1 && (
-            <>
-              <Button
-                onClick={() => handleControl("start")}
-                disabled={controlMutation.isPending}
-                className="h-14 lg:h-16 bg-blue-600 hover:bg-blue-700 rounded-xl"
-              >
-                <Play className="mr-2 h-5 w-5" />
-                Continuar
-              </Button>
-              
-              <Button
-                onClick={() => handleControl("reset")}
-                disabled={controlMutation.isPending}
-                className="h-14 lg:h-16 bg-red-600 hover:bg-red-700 rounded-xl"
-              >
-                <RotateCcw className="mr-2 h-5 w-5" />
-                Resetar
-              </Button>
-            </>
+          {/* Reset Button - sempre visível quando há sessão */}
+          {currentSession && (
+            <Button
+              onClick={() => handleControl("reset")}
+              disabled={controlMutation.isPending}
+              className="h-14 lg:h-16 bg-red-600 hover:bg-red-700 text-white rounded-xl"
+            >
+              <RotateCcw className="mr-2 h-5 w-5" />
+              Resetar
+            </Button>
           )}
         </div>
 
