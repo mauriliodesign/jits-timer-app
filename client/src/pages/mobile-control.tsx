@@ -62,6 +62,20 @@ export default function MobileControl() {
     return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
   };
 
+  // Função para resetar a configuração
+  const resetConfig = () => {
+    setConfig({
+      rounds: 5,
+      roundDuration: 6,
+      restTime: 60,
+    });
+    setConfigChanged({
+      rounds: false,
+      roundDuration: false,
+      restTime: false,
+    });
+  };
+
   const [timerState, setTimerState] = useState({
     isRunning: false,
     isResting: false,
@@ -421,13 +435,16 @@ export default function MobileControl() {
           {/* Main Control Button - Iniciar/Pausar/Continuar */}
           <Button
             onClick={() => {
-              if (currentSession && !currentSession.isRunning) {
-                // Se não está rodando, aplicar config e iniciar
+              if (currentSession && !currentSession.isRunning && currentSession.currentTime === 0) {
+                // Estado inicial: Iniciar Treino
                 applyConfig();
                 handleControl("start");
               } else if (currentSession && currentSession.isRunning) {
-                // Se está rodando, pausar
+                // Treino rodando: Pausar Treino
                 handleControl("pause");
+              } else if (currentSession && !currentSession.isRunning && currentSession.currentTime > 0) {
+                // Treino pausado: Continuar Treino
+                handleControl("start");
               }
             }}
             disabled={!currentSession || !isConfigComplete() || configMutation.isPending || controlMutation.isPending}
@@ -441,12 +458,12 @@ export default function MobileControl() {
             ) : currentSession.isRunning ? (
               <>
                 <Pause className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Pausar o Treino
+                Pausar Treino
               </>
             ) : currentSession.currentTime > 0 ? (
               <>
                 <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
-                Continuar
+                Continuar Treino
               </>
             ) : (
               <>
@@ -458,7 +475,10 @@ export default function MobileControl() {
           
           {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
           <Button
-            onClick={() => handleControl("reset")}
+            onClick={() => {
+              handleControl("reset");
+              resetConfig();
+            }}
             disabled={!currentSession || controlMutation.isPending}
             className="h-14 lg:h-16 bg-white/8 hover:bg-white/16 text-white rounded-xl border border-white/20 disabled:opacity-50 disabled:cursor-not-allowed"
           >
