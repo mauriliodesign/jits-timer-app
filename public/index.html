@@ -47,8 +47,16 @@
         script.src = '/src/main.tsx';
         document.head.appendChild(script);
       } else {
-        // In production, show a message
-        document.querySelector('.status').textContent = 'Aplicação em manutenção. Volte em breve!';
+        // In production, load the built app
+        const script = document.createElement('script');
+        script.type = 'module';
+        script.src = '/assets/index-DcwqpY0L.js';
+        document.head.appendChild(script);
+        
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/assets/index-cpruR9Ei.css';
+        document.head.appendChild(link);
       }
     </script>
   </body>

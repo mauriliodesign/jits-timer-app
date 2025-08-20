@@ -12,7 +12,8 @@ if (process.env.NODE_ENV === "development") {
   // Production fallbacks
   log = (message: string) => console.log(message);
   serveStatic = (app: any) => {
-    // Simple static file serving for production
+    // Static file serving for production
+    app.use(express.static("dist/public"));
     app.use(express.static("public"));
     app.use("*", (_req: any, res: any) => {
       res.sendFile("public/index.html", { root: "." });
