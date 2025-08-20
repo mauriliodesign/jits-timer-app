@@ -47,16 +47,31 @@
         script.src = '/src/main.tsx';
         document.head.appendChild(script);
       } else {
-        // In production, load the built app
-        const script = document.createElement('script');
-        script.type = 'module';
-        script.src = '/assets/index-DcwqpY0L.js';
-        document.head.appendChild(script);
+        // In production, show a message for now
+        document.querySelector('.status').textContent = 'Aplicação em desenvolvimento. Use o controle mobile para configurar.';
         
-        const link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/assets/index-cpruR9Ei.css';
-        document.head.appendChild(link);
+        // Try to load the app after a delay
+        setTimeout(() => {
+          try {
+            const script = document.createElement('script');
+            script.type = 'module';
+            script.src = '/assets/index-DcwqpY0L.js';
+            script.onerror = () => {
+              console.log('Failed to load app, showing maintenance message');
+            };
+            document.head.appendChild(script);
+            
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = '/assets/index-cpruR9Ei.css';
+            link.onerror = () => {
+              console.log('Failed to load CSS');
+            };
+            document.head.appendChild(link);
+          } catch (error) {
+            console.log('Error loading app:', error);
+          }
+        }, 2000);
       }
     </script>
   </body>
