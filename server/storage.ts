@@ -18,10 +18,11 @@ export interface IStorage {
 
 export class MemStorage implements IStorage {
   private firebaseStorage: any = null;
+  private initPromise: Promise<void> | null = null;
 
   constructor() {
     // Load Firebase storage
-    this.initFirebaseStorage();
+    this.initPromise = this.initFirebaseStorage();
   }
 
   private async initFirebaseStorage() {
@@ -35,7 +36,16 @@ export class MemStorage implements IStorage {
     }
   }
 
+  private async ensureInitialized() {
+    if (this.initPromise) {
+      await this.initPromise;
+      this.initPromise = null;
+    }
+  }
+
   async getTimerSession(id: string): Promise<TimerSession | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -44,6 +54,8 @@ export class MemStorage implements IStorage {
   }
 
   async getCurrentSession(): Promise<TimerSession | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -52,6 +64,8 @@ export class MemStorage implements IStorage {
   }
 
   async createTimerSession(insertSession: InsertTimerSession): Promise<TimerSession> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -60,6 +74,8 @@ export class MemStorage implements IStorage {
   }
 
   async updateTimerSession(id: string, updates: Partial<TimerSession>): Promise<TimerSession | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -68,6 +84,8 @@ export class MemStorage implements IStorage {
   }
 
   async getAcademyProfile(userId: string): Promise<AcademyProfile | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -76,6 +94,8 @@ export class MemStorage implements IStorage {
   }
 
   async getLatestAcademyProfile(): Promise<AcademyProfile | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -84,6 +104,8 @@ export class MemStorage implements IStorage {
   }
 
   async createAcademyProfile(insertProfile: InsertAcademyProfile): Promise<AcademyProfile> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
@@ -92,6 +114,8 @@ export class MemStorage implements IStorage {
   }
 
   async updateAcademyProfile(userId: string, updates: Partial<AcademyProfile>): Promise<AcademyProfile | undefined> {
+    await this.ensureInitialized();
+    
     if (!this.firebaseStorage) {
       throw new Error('Firebase storage not available');
     }
