@@ -9,7 +9,7 @@ import {
   playTrainingCompleteSound,
   enableAudio 
 } from "@/lib/sound-utils";
-import { Timer, Wifi, WifiOff, Building2 } from "lucide-react";
+import { Timer, Wifi, WifiOff, Building2, ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import type { TimerSession, AcademyProfile } from "@shared/schema";
 
@@ -171,6 +171,13 @@ export default function TVDisplay() {
                   second: "2-digit"
                 })}
               </p>
+              <button
+                onClick={() => window.open('/', '_blank')}
+                className="mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm rounded-lg border border-white/20 flex items-center gap-1 sm:gap-2"
+              >
+                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                Voltar para Controle
+              </button>
             </div>
           </div>
         </div>

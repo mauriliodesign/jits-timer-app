@@ -49,6 +49,10 @@ export class FirebaseStorage {
       rounds: 5,
       roundDuration: 6,
       restTime: 60,
+      currentRound: 1,
+      currentTime: 6 * 60, // 6 minutes in seconds
+      isRunning: false,
+      isResting: false,
     });
     return defaultSession;
 

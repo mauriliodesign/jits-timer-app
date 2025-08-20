@@ -347,15 +347,15 @@ export default function MobileControl() {
 
         {/* Control Buttons */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6 lg:mb-8">
-          {/* Start button - only show when timer is not running and is in initial state */}
-          {currentSession && !currentSession.isRunning && currentSession.currentRound === 1 && (
+          {/* Start button - show when timer is not running */}
+          {currentSession && !currentSession.isRunning && (
             <Button
               onClick={() => {
                 applyConfig();
                 handleControl("start");
               }}
               disabled={configMutation.isPending || controlMutation.isPending}
-                              className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl"
+              className="w-full h-14 lg:h-16 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-base lg:text-lg font-bold rounded-xl"
             >
               <Play className="mr-2 lg:mr-3 h-5 w-5 lg:h-6 lg:w-6" />
               Iniciar Treino
@@ -363,24 +363,38 @@ export default function MobileControl() {
           )}
           
           {/* Control buttons for active/paused session */}
-          {currentSession && (currentSession.isRunning || currentSession.currentRound > 1 || currentSession.currentTime < currentSession.roundDuration * 60) && (
+          {currentSession && currentSession.isRunning && (
             <>
               <Button
                 onClick={() => handleControl("pause")}
                 disabled={controlMutation.isPending}
                 className="h-14 lg:h-16 bg-orange-600 hover:bg-orange-700 rounded-xl"
               >
-                {currentSession.isRunning ? (
-                  <>
-                    <Pause className="mr-2 h-5 w-5" />
-                    Pausar
-                  </>
-                ) : (
-                  <>
-                    <Play className="mr-2 h-5 w-5" />
-                    Continuar
-                  </>
-                )}
+                <Pause className="mr-2 h-5 w-5" />
+                Pausar
+              </Button>
+              
+              <Button
+                onClick={() => handleControl("reset")}
+                disabled={controlMutation.isPending}
+                className="h-14 lg:h-16 bg-red-600 hover:bg-red-700 rounded-xl"
+              >
+                <RotateCcw className="mr-2 h-5 w-5" />
+                Resetar
+              </Button>
+            </>
+          )}
+
+          {/* Continue button when paused */}
+          {currentSession && !currentSession.isRunning && currentSession.currentRound > 1 && (
+            <>
+              <Button
+                onClick={() => handleControl("start")}
+                disabled={controlMutation.isPending}
+                className="h-14 lg:h-16 bg-blue-600 hover:bg-blue-700 rounded-xl"
+              >
+                <Play className="mr-2 h-5 w-5" />
+                Continuar
               </Button>
               
               <Button
