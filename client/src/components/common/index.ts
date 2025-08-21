@@ -3,3 +3,4 @@ export { Button } from './Button';
 export { Card } from './Card';
 export { Loading } from './Loading';
 export { Stepper } from './Stepper';
+export { TimeInput } from './TimeInput';

@@ -5,11 +5,12 @@ export interface TimerState {
   totalRounds: number;
   isRunning: boolean;
   isResting: boolean;
+  isFinished: boolean;
 }
 
 export interface TimerConfig {
   rounds: number;
-  roundDuration: number; // in minutes
+  fightTime: number; // in seconds
   restTime: number; // in seconds
 }
 
@@ -20,6 +21,8 @@ export type TimerMode = 'timer' | 'countdown' | 'clock';
 export type TimerSize = 'small' | 'large' | 'display';
 
 export type TimerVariant = 'default' | 'card' | 'minimal';
+
+export type TimerPhase = 'idle' | 'fight' | 'rest' | 'finished';
 
 export interface TimerDisplayProps {
   time: number;

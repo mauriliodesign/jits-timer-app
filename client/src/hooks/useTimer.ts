@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TimerService } from '@/services/timerService';
 import { websocketService } from '@/services/websocketService';
-import { TimerState, TimerConfig, TimerAction } from '@/types/timer';
+import { TimerState, TimerConfig, TimerAction, TimerPhase } from '@/types/timer';
 import { TimerUpdateMessage } from '@/types/api';
 import { validationUtils } from '@/utils/validationUtils';
 
@@ -52,9 +52,32 @@ export const useTimer = () => {
         totalRounds: currentSession.rounds,
         isRunning: currentSession.isRunning,
         isResting: currentSession.isResting,
+        isFinished: currentSession.isFinished || false,
       });
     }
   }, [currentSession]);
+
+  // Get current timer phase
+  const getCurrentPhase = useCallback((): TimerPhase => {
+    if (!timerState) return 'idle';
+    return validationUtils.getTimerPhase(timerState);
+  }, [timerState]);
+
+  // Get main button label based on current phase
+  const getMainButtonLabel = useCallback((): string => {
+    const phase = getCurrentPhase();
+    
+    switch (phase) {
+      case 'idle':
+      case 'finished':
+        return 'Start Training';
+      case 'fight':
+      case 'rest':
+        return timerState?.isRunning ? 'Pause Training' : 'Resume Training';
+      default:
+        return 'Start Training';
+    }
+  }, [timerState, getCurrentPhase]);
 
   // Actions
   const updateConfig = useCallback((config: TimerConfig) => {
@@ -91,6 +114,8 @@ export const useTimer = () => {
     timerState,
     currentSession,
     isLoading,
+    currentPhase: getCurrentPhase(),
+    mainButtonLabel: getMainButtonLabel(),
     
     // Actions
     updateConfig,
@@ -106,7 +131,7 @@ export const useTimer = () => {
     // Utilities
     isConfigComplete: timerState ? validationUtils.isConfigComplete({
       rounds: timerState.totalRounds,
-      roundDuration: currentSession?.roundDuration || 0,
+      fightTime: currentSession?.fightTime || 0,
       restTime: currentSession?.restTime || 0,
     }) : false,
   };

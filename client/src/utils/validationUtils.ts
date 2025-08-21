@@ -3,19 +3,19 @@ export const validationUtils = {
   /**
    * Validate timer configuration
    */
-  validateTimerConfig: (config: { rounds: number; roundDuration: number; restTime: number }): string[] => {
+  validateTimerConfig: (config: { rounds: number; fightTime: number; restTime: number }): string[] => {
     const errors: string[] = [];
 
     if (!config.rounds || config.rounds < 1 || config.rounds > 50) {
-      errors.push('Número de rolas deve estar entre 1 e 50');
+      errors.push('Number of rounds must be between 1 and 50');
     }
 
-    if (!config.roundDuration || config.roundDuration < 1 || config.roundDuration > 120) {
-      errors.push('Duração da rola deve estar entre 1 e 120 minutos');
+    if (!config.fightTime || config.fightTime < 30 || config.fightTime > 3600) {
+      errors.push('Fight time must be between 30 seconds and 60 minutes');
     }
 
     if (!config.restTime || config.restTime < 5 || config.restTime > 600) {
-      errors.push('Tempo de descanso deve estar entre 5 e 600 segundos');
+      errors.push('Rest time must be between 5 seconds and 10 minutes');
     }
 
     return errors;
@@ -24,8 +24,8 @@ export const validationUtils = {
   /**
    * Check if configuration is complete
    */
-  isConfigComplete: (config: { rounds: number; roundDuration: number; restTime: number }): boolean => {
-    return config.rounds > 0 && config.roundDuration > 0 && config.restTime > 0;
+  isConfigComplete: (config: { rounds: number; fightTime: number; restTime: number }): boolean => {
+    return config.rounds > 0 && config.fightTime > 0 && config.restTime > 0;
   },
 
   /**
@@ -40,5 +40,30 @@ export const validationUtils = {
    */
   isValidWSMessage: (message: any): boolean => {
     return message && typeof message === 'object' && message.type && message.data;
+  },
+
+  /**
+   * Get current timer phase
+   */
+  getTimerPhase: (timerState: {
+    isRunning: boolean;
+    isResting: boolean;
+    isFinished?: boolean;
+    currentRound: number;
+    totalRounds: number;
+  }): 'idle' | 'fight' | 'rest' | 'finished' => {
+    if (timerState.isFinished || (timerState.currentRound > timerState.totalRounds)) {
+      return 'finished';
+    }
+    
+    if (!timerState.isRunning && timerState.currentRound === 1 && !timerState.isResting) {
+      return 'idle';
+    }
+    
+    if (timerState.isResting) {
+      return 'rest';
+    }
+    
+    return 'fight';
   }
 };

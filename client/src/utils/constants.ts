@@ -2,17 +2,17 @@
 export const TIMER_CONSTANTS = {
   DEFAULT_CONFIG: {
     rounds: 5,
-    roundDuration: 6, // minutes
-    restTime: 60, // seconds
+    fightTime: 360, // 6 minutes in seconds
+    restTime: 60, // 1 minute in seconds
   },
   
   LIMITS: {
     MIN_ROUNDS: 1,
     MAX_ROUNDS: 50,
-    MIN_ROUND_DURATION: 1, // minutes
-    MAX_ROUND_DURATION: 120, // minutes
-    MIN_REST_TIME: 5, // seconds
-    MAX_REST_TIME: 600, // seconds
+    MIN_FIGHT_TIME: 30, // 30 seconds
+    MAX_FIGHT_TIME: 3600, // 60 minutes
+    MIN_REST_TIME: 5, // 5 seconds
+    MAX_REST_TIME: 600, // 10 minutes
   },
   
   INTERVALS: {
@@ -41,6 +41,27 @@ export const TIMER_CONSTANTS = {
     BACKGROUND: '#121214',
     SURFACE: '#17171a',
     BORDER: '#252529',
+    FIGHT: '#59FF3A', // Green for fight
+    REST: '#3B82F6', // Blue for rest
+    FINISHED: '#6B7280', // Gray for finished
+  },
+
+  PHASES: {
+    IDLE: 'idle',
+    FIGHT: 'fight',
+    REST: 'rest',
+    FINISHED: 'finished',
+  },
+
+  LABELS: {
+    START_TRAINING: 'Start Training',
+    PAUSE_TRAINING: 'Pause Training',
+    RESUME_TRAINING: 'Resume Training',
+    FIGHT: 'Fight',
+    REST: 'Rest',
+    FINISHED: 'Finished',
+    ROUND: 'Round',
+    OF: 'of',
   }
 } as const;
 

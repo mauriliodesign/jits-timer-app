@@ -23,10 +23,10 @@ export const timeUtils = {
   /**
    * Calculate total training time in seconds
    */
-  calculateTotalTime: (config: { rounds: number; roundDuration: number; restTime: number }): number => {
-    const roundTime = config.rounds * config.roundDuration * 60; // Convert minutes to seconds
+  calculateTotalTime: (config: { rounds: number; fightTime: number; restTime: number }): number => {
+    const fightTime = config.rounds * config.fightTime;
     const restTime = (config.rounds - 1) * config.restTime; // Rest between rounds
-    return roundTime + restTime;
+    return fightTime + restTime;
   },
 
   /**
@@ -71,5 +71,21 @@ export const timeUtils = {
       minute: '2-digit',
       second: '2-digit'
     });
+  },
+
+  /**
+   * Convert minutes and seconds to total seconds
+   */
+  minutesSecondsToSeconds: (minutes: number, seconds: number): number => {
+    return (minutes * 60) + seconds;
+  },
+
+  /**
+   * Convert seconds to minutes and seconds
+   */
+  secondsToMinutesSeconds: (totalSeconds: number): { minutes: number; seconds: number } => {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return { minutes, seconds };
   }
 };

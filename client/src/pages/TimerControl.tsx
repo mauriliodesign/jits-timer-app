@@ -5,9 +5,11 @@ import { useTimerConfig } from '@/hooks/useTimerConfig';
 import { TimerDisplay } from '@/components/timer/TimerDisplay';
 import { TimerControls } from '@/components/timer/TimerControls';
 import { RoundIndicator } from '@/components/timer/RoundIndicator';
+import { PhaseStatus } from '@/components/timer/PhaseStatus';
 import { Button } from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
 import { Stepper } from '@/components/common/Stepper';
+import { TimeInput } from '@/components/common/TimeInput';
 import { Loading } from '@/components/common/Loading';
 import { Play, Pause, Square, RotateCcw, Settings, Monitor } from 'lucide-react';
 import { timeUtils } from '@/utils/timeUtils';
@@ -21,6 +23,8 @@ export const TimerControl: React.FC = () => {
     timerState, 
     currentSession, 
     isLoading, 
+    currentPhase,
+    mainButtonLabel,
     startTimer, 
     pauseTimer, 
     resetTimer,
@@ -35,12 +39,14 @@ export const TimerControl: React.FC = () => {
     isConfigValid 
   } = useTimerConfig();
 
-  const handleStart = () => {
-    startTimer(config);
-  };
-
-  const handlePause = () => {
-    pauseTimer();
+  const handleMainAction = () => {
+    if (currentPhase === 'idle' || currentPhase === 'finished') {
+      startTimer(config);
+    } else if (timerState?.isRunning) {
+      pauseTimer();
+    } else {
+      startTimer();
+    }
   };
 
   const handleStop = () => {
@@ -53,7 +59,7 @@ export const TimerControl: React.FC = () => {
   };
 
   if (isLoading || !currentSession) {
-    return <Loading size="large" text="Carregando..." className="min-h-screen" />;
+    return <Loading size="large" text="Loading..." className="min-h-screen" />;
   }
 
   return (
@@ -83,7 +89,7 @@ export const TimerControl: React.FC = () => {
         <Card variant="compact" className="section-spacing">
           <div className="grid-status">
             <div>
-              <div className="text-caption mb-1">Rola Atual</div>
+              <div className="text-caption mb-1">Current Round</div>
               <div className="timer-display-large">
                 {timerState?.isRunning || timerState?.currentTime ? timerState?.currentRound : "—"}
               </div>
@@ -105,6 +111,15 @@ export const TimerControl: React.FC = () => {
               </div>
             </div>
           </div>
+          
+          {/* Phase Status */}
+          <div className="mt-4">
+            <PhaseStatus
+              phase={currentPhase}
+              isRunning={timerState?.isRunning || false}
+              className="w-full"
+            />
+          </div>
         </Card>
 
         {/* Configuration */}
@@ -112,7 +127,7 @@ export const TimerControl: React.FC = () => {
           <Card>
             <div className="flex items-center mb-3 sm:mb-4 lg:mb-6">
               <Settings className="h-4 w-4 sm:h-5 sm:w-5 text-[#59FF3A] mr-2" />
-              <h2 className="text-heading-large">Configurações</h2>
+              <h2 className="text-heading-large">Configuration</h2>
             </div>
             
             <Stepper
@@ -125,42 +140,40 @@ export const TimerControl: React.FC = () => {
               variant="minimal"
               showValue={true}
               placeholder="—"
-              label="Número de Rolas"
+              label="Number of Rounds"
               className="section-spacing-compact"
             />
 
-            <Stepper
-              value={config.roundDuration}
-              onValueChange={(value) => updateField('roundDuration', value)}
-              min={TIMER_CONSTANTS.LIMITS.MIN_ROUND_DURATION}
-              max={TIMER_CONSTANTS.LIMITS.MAX_ROUND_DURATION}
-              step={1}
+            <TimeInput
+              value={config.fightTime}
+              onValueChange={(value) => updateField('fightTime', value)}
+              label="Fight Time"
+              minMinutes={0}
+              maxMinutes={60}
+              minSeconds={0}
+              maxSeconds={59}
               size="large"
               variant="minimal"
-              showValue={true}
-              placeholder="—"
-              label="Duração da Rola (minutos)"
               className="section-spacing-compact"
             />
 
-            <Stepper
+            <TimeInput
               value={config.restTime}
               onValueChange={(value) => updateField('restTime', value)}
-              min={TIMER_CONSTANTS.LIMITS.MIN_REST_TIME}
-              max={TIMER_CONSTANTS.LIMITS.MAX_REST_TIME}
-              step={5}
+              label="Rest Time"
+              minMinutes={0}
+              maxMinutes={10}
+              minSeconds={0}
+              maxSeconds={59}
               size="large"
               variant="minimal"
-              showValue={true}
-              placeholder="—"
-              label="Tempo de Descanso (segundos)"
               className="section-spacing-compact"
             />
           </Card>
 
           <Card>
             <div className="text-center mb-6">
-              <div className="text-caption mb-2">Tempo Total</div>
+              <div className="text-caption mb-2">Total Time</div>
               <div className="timer-display-large">
                 {isConfigValid() ? timeUtils.formatTime(timeUtils.calculateTotalTime(config)) : "—"}
               </div>
@@ -173,7 +186,7 @@ export const TimerControl: React.FC = () => {
               icon={<Monitor />}
               fullWidth
             >
-              Abrir Tela da TV
+              Open TV Display
             </Button>
           </Card>
         </div>
@@ -181,14 +194,14 @@ export const TimerControl: React.FC = () => {
         {/* Control Buttons */}
         <div className="flex flex-col gap-3 sm:gap-4 section-spacing">
           <Button
-            onClick={timerState?.isRunning ? handlePause : handleStart}
+            onClick={handleMainAction}
             disabled={!isConfigValid() || configMutation.isPending || controlMutation.isPending}
             loading={configMutation.isPending || controlMutation.isPending}
             icon={timerState?.isRunning ? <Pause /> : <Play />}
             size="large"
             fullWidth
           >
-            {timerState?.isRunning ? "Pausar Treino" : "Iniciar Treino"}
+            {mainButtonLabel}
           </Button>
           
           <Button
@@ -200,7 +213,7 @@ export const TimerControl: React.FC = () => {
             size="large"
             fullWidth
           >
-            Parar
+            Stop
           </Button>
 
           <Button
@@ -212,7 +225,7 @@ export const TimerControl: React.FC = () => {
             size="large"
             fullWidth
           >
-            Reiniciar
+            Reset
           </Button>
         </div>
       </div>
