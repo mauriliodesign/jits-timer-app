@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ultra Simple Timer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #121214;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            background: #17171a;
+            padding: 2rem;
+            border-radius: 1rem;
+            border: 1px solid #252529;
+        }
+        .timer {
+            font-size: 6rem;
+            font-weight: bold;
+            font-family: monospace;
+            margin: 2rem 0;
+            color: #59FF3A;
+        }
+        .status {
+            font-size: 2rem;
+            margin: 1rem 0;
+            color: #59FF3A;
+        }
+        .rounds {
+            font-size: 1.5rem;
+            margin: 1rem 0;
+            color: #5a5a60;
+        }
+        .buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        button {
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            background: #59FF3A;
+            color: #121214;
+            font-weight: bold;
+            min-width: 120px;
+        }
+        button:hover {
+            background: #4ade80;
+        }
+        button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+        .config {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #1e1e21;
+            border-radius: 0.5rem;
+        }
+        .config input {
+            padding: 0.5rem;
+            margin: 0.5rem;
+            border: 1px solid #252529;
+            border-radius: 0.25rem;
+            background: #17171a;
+            color: white;
+            width: 80px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🥋 Ultra Simple Timer</h1>
+        
+        <div class="timer" id="timer">00:00</div>
+        <div class="status" id="status">Ready</div>
+        <div class="rounds" id="rounds">Round 0 of 0</div>
+        
+        <div class="buttons">
+            <button id="startBtn" onclick="startTimer()">START</button>
+            <button id="pauseBtn" onclick="pauseTimer()" disabled>PAUSE</button>
+            <button id="resetBtn" onclick="resetTimer()">RESET</button>
+        </div>
+        
+        <div class="config">
+            <h3>⚙️ Configuration</h3>
+            <input type="number" id="roundsInput" placeholder="Rounds" value="5" min="1" max="50">
+            <input type="number" id="fightTimeInput" placeholder="Fight (sec)" value="300" min="30" max="3600">
+            <input type="number" id="restTimeInput" placeholder="Rest (sec)" value="60" min="5" max="600">
+            <button onclick="updateConfig()">Update</button>
+        </div>
+    </div>
+
+    <script>
+        // Timer state
+        let timerState = {
+            currentTime: 0,
+            currentRound: 1,
+            totalRounds: 5,
+            isRunning: false,
+            isResting: false,
+            isFinished: false
+        };
+
+        // Timer configuration
+        let config = {
+            rounds: 5,
+            fightTime: 300,
+            restTime: 60
+        };
+
+        let interval = null;
+
+        function updateDisplay() {
+            // Update timer display
+            const minutes = Math.floor(timerState.currentTime / 60);
+            const seconds = timerState.currentTime % 60;
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update status
+            let status = 'Ready';
+            if (timerState.isFinished) {
+                status = '🏁 Finished';
+            } else if (timerState.isRunning) {
+                status = timerState.isResting ? '🛌 Rest' : '🥊 Fight';
+            }
+            document.getElementById('status').textContent = status;
+            
+            // Update rounds
+            document.getElementById('rounds').textContent = 
+                `Round ${timerState.currentRound} of ${timerState.totalRounds}`;
+            
+            // Update buttons
+            document.getElementById('startBtn').disabled = timerState.isRunning;
+            document.getElementById('pauseBtn').disabled = !timerState.isRunning;
+        }
+
+        function tick() {
+            if (!timerState.isRunning) return;
+
+            timerState.currentTime--;
+
+            console.log(`Round ${timerState.currentRound}/${timerState.totalRounds} - ${formatTime(timerState.currentTime)} - ${timerState.isResting ? 'REST' : 'FIGHT'}`);
+
+            if (timerState.currentTime <= 0) {
+                handleTimeUp();
+            }
+
+            updateDisplay();
+        }
+
+        function handleTimeUp() {
+            if (timerState.isResting) {
+                // Rest ended, next round
+                timerState.currentRound++;
+                if (timerState.currentRound <= timerState.totalRounds) {
+                    timerState.currentTime = config.fightTime;
+                    timerState.isResting = false;
+                    console.log(`Round ${timerState.currentRound} started!`);
+                } else {
+                    // Training completed
+                    timerState.isRunning = false;
+                    timerState.isResting = false;
+                    timerState.currentTime = 0;
+                    timerState.isFinished = true;
+                    console.log('Training FINISHED!');
+                    clearInterval(interval);
+                }
+            } else {
+                // Round ended, rest
+                if (timerState.currentRound < timerState.totalRounds) {
+                    timerState.currentTime = config.restTime;
+                    timerState.isResting = true;
+                    console.log('Rest period started!');
+                } else {
+                    // Last round ended
+                    timerState.isRunning = false;
+                    timerState.isResting = false;
+                    timerState.currentTime = 0;
+                    timerState.isFinished = true;
+                    console.log('Training FINISHED!');
+                    clearInterval(interval);
+                }
+            }
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const remainingSeconds = seconds % 60;
+            return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerState.isRunning) return;
+            
+            console.log('Timer STARTED');
+            timerState.isRunning = true;
+            timerState.isFinished = false;
+            
+            // If it's the start of training, set initial time
+            if (timerState.currentTime === 0) {
+                timerState.currentTime = config.fightTime;
+            }
+            
+            interval = setInterval(tick, 1000);
+            updateDisplay();
+        }
+
+        function pauseTimer() {
+            if (!timerState.isRunning) return;
+            
+            console.log('Timer PAUSED');
+            timerState.isRunning = false;
+            clearInterval(interval);
+            updateDisplay();
+        }
+
+        function resetTimer() {
+            console.log('Timer RESET');
+            timerState.isRunning = false;
+            timerState.isResting = false;
+            timerState.currentRound = 1;
+            timerState.currentTime = 0;
+            timerState.isFinished = false;
+            clearInterval(interval);
+            updateDisplay();
+        }
+
+        function updateConfig() {
+            config.rounds = parseInt(document.getElementById('roundsInput').value);
+            config.fightTime = parseInt(document.getElementById('fightTimeInput').value);
+            config.restTime = parseInt(document.getElementById('restTimeInput').value);
+            
+            timerState.totalRounds = config.rounds;
+            
+            console.log('Config updated:', config);
+            updateDisplay();
+        }
+
+        // Initialize display
+        updateDisplay();
+    </script>
+</body>
+</html>

@@ -27,7 +27,8 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     try {
       const data = JSON.parse(message);
-      handleMessage(data);
+      console.log('Received message:', data);
+      // Por enquanto, apenas log das mensagens
     } catch (error) {
       console.error('Error parsing message:', error);
     }
@@ -97,7 +98,7 @@ app.post('/api/timer/control', (req, res) => {
 });
 
 // Servir arquivos estáticos
-app.use(express.static('public'));
+app.use(express.static('client'));
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {

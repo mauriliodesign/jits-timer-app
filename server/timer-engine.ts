@@ -8,155 +8,169 @@ export function setBroadcastFunction(broadcastFn: (message: any) => void) {
   broadcastMessage = broadcastFn;
 }
 
-class TimerEngine {
-  private intervals: Map<string, NodeJS.Timeout> = new Map();
-  private startTimes: Map<string, number> = new Map();
-  private initialTimes: Map<string, number> = new Map();
+// Simple Timer Implementation
+class SimpleTimerEngine {
+  private interval: NodeJS.Timeout | null = null;
+  private currentTime: number = 0;
+  private isRunning: boolean = false;
+  private isResting: boolean = false;
+  private currentRound: number = 1;
+  private totalRounds: number = 5;
+  private fightTime: number = 300; // 5 minutes
+  private restTime: number = 60; // 1 minute
+  private sessionId: string = 'default';
 
   async startTimer(sessionId: string) {
-    // Clear existing interval
+    this.sessionId = sessionId;
+    
+    // Stop existing timer
     this.stopTimer(sessionId);
 
-    // Get current session to determine initial time
+    // Get current session
     const session = await storage.getTimerSession(sessionId);
     if (!session) return;
 
-    // Store start time and initial time for precise calculations
-    const now = Date.now();
-    this.startTimes.set(sessionId, now);
-    this.initialTimes.set(sessionId, session.currentTime);
+    // Set configuration from session
+    this.totalRounds = session.rounds;
+    this.fightTime = session.fightTime;
+    this.restTime = session.restTime;
+    this.currentRound = session.currentRound;
+    this.currentTime = session.currentTime || this.fightTime;
+    this.isResting = session.isResting || false;
 
-    // Use more frequent updates for better precision (100ms instead of 1000ms)
-    const interval = setInterval(async () => {
-      await this.updateTimer(sessionId);
-    }, 100);
+    // Start the timer
+    this.isRunning = true;
+    
+    // Update session state
+    await storage.updateTimerSession(sessionId, {
+      isRunning: true,
+      currentTime: this.currentTime
+    });
 
-    this.intervals.set(sessionId, interval);
-    console.log(`Timer started for session ${sessionId} with precise timing`);
+    // Start interval
+    this.interval = setInterval(() => {
+      this.tick();
+    }, 1000);
+
+    console.log(`Timer started for session ${sessionId}`);
   }
 
   stopTimer(sessionId: string) {
-    const interval = this.intervals.get(sessionId);
-    if (interval) {
-      clearInterval(interval);
-      this.intervals.delete(sessionId);
-      this.startTimes.delete(sessionId);
-      this.initialTimes.delete(sessionId);
+    if (this.interval) {
+      clearInterval(this.interval);
+      this.interval = null;
+      this.isRunning = false;
       console.log(`Timer stopped for session ${sessionId}`);
     }
   }
 
-  private async updateTimer(sessionId: string) {
-    try {
-      const session = await storage.getTimerSession(sessionId);
-      if (!session || !session.isRunning) {
-        this.stopTimer(sessionId);
-        return;
-      }
+  private async tick() {
+    if (!this.isRunning) return;
 
-      // Calculate precise elapsed time
-      const startTime = this.startTimes.get(sessionId);
-      const initialTime = this.initialTimes.get(sessionId);
-      
-      if (!startTime || initialTime === undefined) {
-        this.stopTimer(sessionId);
-        return;
-      }
+    this.currentTime--;
 
-      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
-      const currentTime = Math.max(0, initialTime - elapsedSeconds);
+    console.log(`Round ${this.currentRound}/${this.totalRounds} - ${this.formatTime(this.currentTime)} - ${this.isResting ? 'REST' : 'FIGHT'}`);
 
-      let updates: Partial<TimerSession> = {};
-      let shouldStop = false;
+    // Update database
+    await storage.updateTimerSession(this.sessionId, {
+      currentTime: this.currentTime,
+      currentRound: this.currentRound,
+      isRunning: this.isRunning,
+      isResting: this.isResting
+    });
 
-      if (session.isResting) {
-        // Rest period countdown
-        if (currentTime > 0) {
-          updates.currentTime = currentTime;
-        } else {
-          // Rest period ended, start next round
-          const nextRound = session.currentRound + 1;
-          if (nextRound <= session.rounds) {
-            updates.currentRound = nextRound;
-            updates.currentTime = session.fightTime;
-            updates.isResting = false;
-            
-            // Update start time for new round
-            this.startTimes.set(sessionId, Date.now());
-            this.initialTimes.set(sessionId, session.fightTime);
-          } else {
-            // Training completed
-            updates.isRunning = false;
-            updates.isResting = false;
-            updates.isFinished = true;
-            shouldStop = true;
-          }
+    // Broadcast update
+    if (broadcastMessage) {
+      broadcastMessage({
+        type: "timer_update",
+        data: {
+          currentTime: this.currentTime,
+          currentRound: this.currentRound,
+          isRunning: this.isRunning,
+          isResting: this.isResting,
+          isFinished: false,
+          totalRounds: this.totalRounds,
+          timestamp: Date.now()
         }
-      } else {
-        // Round countdown
-        if (currentTime > 0) {
-          updates.currentTime = currentTime;
-        } else {
-          // Round ended, start rest period
-          if (session.currentRound < session.rounds) {
-            updates.currentTime = session.restTime;
-            updates.isResting = true;
-            
-            // Update start time for rest period
-            this.startTimes.set(sessionId, Date.now());
-            this.initialTimes.set(sessionId, session.restTime);
-          } else {
-            // Training completed
-            updates.isRunning = false;
-            updates.isResting = false;
-            updates.isFinished = true;
-            shouldStop = true;
-          }
-        }
-      }
-
-      // Only update if there are changes (avoid unnecessary database calls)
-      if (Object.keys(updates).length > 0) {
-        await storage.updateTimerSession(sessionId, updates);
-      }
-
-      // Broadcast timer update to all clients (more frequent for better sync)
-      if (broadcastMessage) {
-        const updatedSession = await storage.getTimerSession(sessionId);
-        if (updatedSession) {
-                  broadcastMessage({
-          type: "timer_update",
-          data: {
-            currentTime: updatedSession.currentTime,
-            currentRound: updatedSession.currentRound,
-            isRunning: updatedSession.isRunning,
-            isResting: updatedSession.isResting,
-            isFinished: updatedSession.isFinished || false,
-            totalRounds: updatedSession.rounds,
-            timestamp: Date.now(), // Add timestamp for client sync
-          },
-        });
-        }
-      }
-
-      if (shouldStop) {
-        this.stopTimer(sessionId);
-      }
-    } catch (error) {
-      console.error(`Error updating timer ${sessionId}:`, error);
-      this.stopTimer(sessionId);
+      });
     }
+
+    if (this.currentTime <= 0) {
+      await this.handleTimeUp();
+    }
+  }
+
+  private async handleTimeUp() {
+    if (this.isResting) {
+      // Rest ended, next round
+      this.currentRound++;
+      if (this.currentRound <= this.totalRounds) {
+        this.currentTime = this.fightTime;
+        this.isResting = false;
+        console.log(`Round ${this.currentRound} started!`);
+      } else {
+        // Training completed
+        this.isRunning = false;
+        this.isResting = false;
+        this.currentTime = 0;
+        console.log('Training FINISHED!');
+        this.stopTimer(this.sessionId);
+      }
+    } else {
+      // Round ended, rest
+      if (this.currentRound < this.totalRounds) {
+        this.currentTime = this.restTime;
+        this.isResting = true;
+        console.log('Rest period started!');
+      } else {
+        // Last round ended
+        this.isRunning = false;
+        this.isResting = false;
+        this.currentTime = 0;
+        console.log('Training FINISHED!');
+        this.stopTimer(this.sessionId);
+      }
+    }
+
+    // Update database with new state
+    await storage.updateTimerSession(this.sessionId, {
+      currentTime: this.currentTime,
+      currentRound: this.currentRound,
+      isRunning: this.isRunning,
+      isResting: this.isResting,
+      isFinished: !this.isRunning && this.currentRound >= this.totalRounds
+    });
+
+    // Broadcast final update
+    if (broadcastMessage) {
+      broadcastMessage({
+        type: "timer_update",
+        data: {
+          currentTime: this.currentTime,
+          currentRound: this.currentRound,
+          isRunning: this.isRunning,
+          isResting: this.isResting,
+          isFinished: !this.isRunning && this.currentRound >= this.totalRounds,
+          totalRounds: this.totalRounds,
+          timestamp: Date.now()
+        }
+      });
+    }
+  }
+
+  private formatTime(seconds: number): string {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   }
 
   // Clean up all intervals
   cleanup() {
-    for (const [sessionId] of this.intervals) {
-      this.stopTimer(sessionId);
-    }
+    this.stopTimer(this.sessionId);
   }
 }
 
-export const timerEngine = new TimerEngine();
+export const timerEngine = new SimpleTimerEngine();
 
 // Cleanup on process exit
 process.on('SIGINT', () => {
