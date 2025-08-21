@@ -6,9 +6,10 @@ import { Play, Pause, Square, Settings, Timer, Wifi, Users, RotateCcw, Monitor }
 import { useWebSocket } from "@/hooks/use-websocket";
 import { formatTime, calculateTotalTime } from "@/lib/timer-utils";
 import { 
-  createResetFunction, 
-  createSoftResetFunction, 
-  createConfigResetFunction,
+  resetSteppersToInitial,
+  resetAllToInitial,
+  resetOnlySteppers,
+  resetOnlyTimer,
   DEFAULT_CONFIG,
   DEFAULT_CONFIG_CHANGED,
   DEFAULT_TIMER_STATE
@@ -76,29 +77,16 @@ export default function MobileControl() {
     return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
   };
 
-  // Create reset functions using utility
-  const resetAll = createResetFunction(
-    setConfig,
-    setConfigChanged,
-    setTimerState,
-    () => {
-      handleControl("reset");
-      audioInitializedRef.current = false;
-    }
-  );
-
-  const softReset = createSoftResetFunction(
-    setTimerState,
-    () => {
-      handleControl("reset");
-      audioInitializedRef.current = false;
-    }
-  );
-
-  const resetConfig = createConfigResetFunction(
-    setConfig,
-    setConfigChanged
-  );
+  // Função para resetar completamente a aplicação
+  const resetAll = () => {
+    resetAllToInitial(
+      setConfig,
+      setConfigChanged,
+      setTimerState,
+      () => handleControl("reset"),
+      audioInitializedRef
+    );
+  };
 
   const [timerState, setTimerState] = useState({
     isRunning: false,
@@ -457,16 +445,39 @@ export default function MobileControl() {
           
           {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
           <SecondaryLargeButton
-            onClick={resetAll}
+            onClick={() => {
+              handleControl("reset");
+              resetAll();
+            }}
             disabled={!currentSession || controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<RotateCcw />}
           >
-            Resetar
+            Resetar Tudo
           </SecondaryLargeButton>
         </div>
 
+        {/* Additional Reset Options */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-4">
+          <SecondaryLargeButton
+            onClick={() => resetOnlySteppers(setConfig, setConfigChanged)}
+            disabled={!currentSession}
+            size="small"
+            icon={<RotateCcw />}
+          >
+            Resetar Steppers
+          </SecondaryLargeButton>
 
+          <SecondaryLargeButton
+            onClick={() => resetOnlyTimer(setTimerState, () => handleControl("reset"), audioInitializedRef)}
+            disabled={!currentSession || controlMutation.isPending}
+            loading={controlMutation.isPending}
+            size="small"
+            icon={<RotateCcw />}
+          >
+            Resetar Timer
+          </SecondaryLargeButton>
+        </div>
       </div>
     </div>
   );
