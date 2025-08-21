@@ -69,11 +69,17 @@ export class MemStorage implements IStorage {
   async getTimerSession(id: string): Promise<TimerSession | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.getTimerSession(id);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.getTimerSession(id);
     }
-    
-    return await this.firebaseStorage.getTimerSession(id);
   }
 
   async getCurrentSession(): Promise<TimerSession | undefined> {
@@ -127,41 +133,65 @@ export class MemStorage implements IStorage {
   async getAcademyProfile(userId: string): Promise<AcademyProfile | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.getAcademyProfile(userId);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.getAcademyProfile(userId);
     }
-    
-    return await this.firebaseStorage.getAcademyProfile(userId);
   }
 
   async getLatestAcademyProfile(): Promise<AcademyProfile | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.getLatestAcademyProfile();
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.getLatestAcademyProfile();
     }
-    
-    return await this.firebaseStorage.getLatestAcademyProfile();
   }
 
   async createAcademyProfile(insertProfile: InsertAcademyProfile): Promise<AcademyProfile> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.createAcademyProfile(insertProfile);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.createAcademyProfile(insertProfile);
     }
-    
-    return await this.firebaseStorage.createAcademyProfile(insertProfile);
   }
 
   async updateAcademyProfile(userId: string, updates: Partial<AcademyProfile>): Promise<AcademyProfile | undefined> {
     await this.ensureInitialized();
     
-    if (!this.firebaseStorage) {
-      throw new Error('Firebase storage not available');
+    if (useFirebaseStorage) {
+      if (!this.firebaseStorage) {
+        throw new Error('Firebase storage not available');
+      }
+      return await this.firebaseStorage.updateAcademyProfile(userId, updates);
+    } else {
+      if (!this.devStorage) {
+        throw new Error('Dev storage not available');
+      }
+      return await this.devStorage.updateAcademyProfile(userId, updates);
     }
-    
-    return await this.firebaseStorage.updateAcademyProfile(userId, updates);
   }
 }
 

@@ -7,7 +7,9 @@ import { AuthProvider } from "@/hooks/use-auth";
 import AuthGuard from "@/components/auth-guard";
 import DevAuthGuard from "@/components/dev-auth-guard";
 import { TimerControl } from "@/pages/TimerControl";
+import { TimerControlSimple } from "@/pages/TimerControlSimple";
 import TVDisplay from "@/pages/tv-display";
+import TVDisplaySimple from "@/pages/tv-display-simple";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
 
@@ -32,6 +34,13 @@ function Router() {
           <TimerControl />
         </Guard>
       )} />
+      <Route path="/simple" component={TimerControlSimple} />
+      <Route path="/mobile-simple" component={TimerControlSimple} />
+      <Route path="/control-simple" component={TimerControlSimple} />
+      <Route path="/simple-home" component={() => {
+        window.location.href = '/simple-timer.html';
+        return null;
+      }} />
       <Route path="/profile" component={() => (
         <Guard>
           <Profile />
@@ -43,6 +52,7 @@ function Router() {
         </Guard>
       )} />
       <Route path="/tv" component={TVDisplay} />
+      <Route path="/tv-simple" component={TVDisplaySimple} />
       {/* Fallback to 404 */}
       <Route component={NotFound} />
     </Switch>

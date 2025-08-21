@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JITS Timer - Versão Simplificada</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #121214;
+            color: white;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .logo {
+            color: #59FF3A;
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            color: #5a5a60;
+            font-size: 1.1rem;
+        }
+        .links {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+        .link {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #59FF3A;
+            color: #121214;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .link:hover {
+            background: #4ade80;
+            transform: translateY(-2px);
+        }
+        .link.secondary {
+            background: #2a2a2e;
+            color: white;
+        }
+        .link.secondary:hover {
+            background: #3a3a3e;
+        }
+        .info {
+            background: #2a2a2e;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 40px;
+        }
+        .info h3 {
+            color: #59FF3A;
+            margin-top: 0;
+        }
+        .info ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .info li {
+            margin: 5px 0;
+            color: #a0a0a0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">JITS TIMER</div>
+            <div class="subtitle">Versão Simplificada - Sem Servidor</div>
+        </div>
+
+        <div class="links">
+            <a href="/simple" class="link">Controle do Timer</a>
+            <a href="/tv-simple" class="link secondary">Exibição TV</a>
+        </div>
+
+        <div class="info">
+            <h3>Como usar:</h3>
+            <ul>
+                <li><strong>Controle do Timer:</strong> Configure e controle o timer no seu dispositivo móvel</li>
+                <li><strong>Exibição TV:</strong> Abra em uma TV ou tela grande para exibir o timer</li>
+                <li>As configurações são salvas automaticamente no navegador</li>
+                <li>O timer funciona completamente offline, sem necessidade de servidor</li>
+                <li>Para sincronizar entre dispositivos, use a mesma URL em ambos</li>
+            </ul>
+            
+            <h3>Funcionalidades:</h3>
+            <ul>
+                <li>Configuração de tempo de luta e descanso</li>
+                <li>Número de rounds configurável</li>
+                <li>Pausar e retomar o timer</li>
+                <li>Reset completo da sessão</li>
+                <li>Transição automática entre luta e descanso</li>
+                <li>Indicadores visuais de progresso</li>
+                <li>Efeitos sonoros (requer interação do usuário)</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>

@@ -187,27 +187,26 @@ export default function TVDisplay() {
 
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8">
+      <div className="flex-1 flex flex-col justify-center items-center px-2 sm:px-4 lg:px-6 xl:px-8">
 
-        <div className="text-center max-w-4xl mx-auto w-full">
-
+        <div className="text-center w-full max-w-[90vw] mx-auto">
 
         {/* Status Message */}
-        <div className="mb-4 sm:mb-8">
-          <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-[#5a5a60] mb-2">
+        <div className="mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl text-[#5a5a60] mb-2">
             {getStatusMessage()}
           </h1>
         </div>
 
         {/* Main Timer Display */}
-        <div className="mb-6 sm:mb-12">
-          <div className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[14.4rem] font-mono font-bold text-white mb-2 sm:mb-4 leading-none tracking-wider">
+        <div className="mb-6 sm:mb-10 lg:mb-12">
+          <div className="text-6xl sm:text-8xl md:text-[10rem] lg:text-[13rem] xl:text-[14rem] 2xl:text-[20rem] font-mono font-bold text-white mb-2 sm:mb-4 leading-none tracking-wider">
             {timeUtils.formatTime(timerState.currentTime)}
           </div>
           
           {/* Progress Bar */}
-          <div className="w-full max-w-2xl mx-auto mb-4 sm:mb-8">
-            <div className="h-1 sm:h-2 bg-[#2a2a2e] rounded-full overflow-hidden">
+          <div className="w-full max-w-4xl mx-auto mb-4 sm:mb-6">
+            <div className="h-2 sm:h-3 bg-[#2a2a2e] rounded-full overflow-hidden">
               <div 
                 className={`h-full transition-all duration-1000 ease-linear ${
                   timerState.isResting ? "bg-orange-500" : "bg-[#59FF3A]"
@@ -217,19 +216,19 @@ export default function TVDisplay() {
                 }}
               ></div>
             </div>
-            <div className="flex justify-between text-xs sm:text-sm text-[#5a5a60] mt-1 sm:mt-2">
+            <div className="flex justify-between text-sm sm:text-base lg:text-lg text-[#5a5a60] mt-1 sm:mt-2">
               <span>Progresso da {timerState.isResting ? "rola" : "rola"}</span>
               <span>{Math.round(progressPercentage)}%</span>
             </div>
           </div>
         </div>
 
-                {/* Round Indicators */}
-        <div className="flex justify-center space-x-2 sm:space-x-4 mb-4 sm:mb-8">
+        {/* Round Indicators */}
+        <div className="flex justify-center space-x-4 sm:space-x-6 lg:space-x-8 mb-4 sm:mb-6">
           {Array.from({ length: timerState.totalRounds }).map((_, index) => (
             <div
               key={index}
-              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full transition-all duration-300 flex items-center justify-center font-bold text-xs sm:text-sm ${
+              className={`w-8 h-8 sm:w-10 sm:h-10 lg:w-13 lg:h-13 rounded-full transition-all duration-300 flex items-center justify-center font-bold text-base sm:text-lg lg:text-xl ${
                 index < timerState.currentRound - 1
                   ? "bg-[#59FF3A] text-[#121214]"
                   : index === timerState.currentRound - 1
@@ -243,7 +242,6 @@ export default function TVDisplay() {
             </div>
           ))}
         </div>
-
 
         </div>
       </div>
