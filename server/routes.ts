@@ -66,7 +66,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       switch (action) {
         case "start":
           updates.isRunning = true;
-          updates.currentTime = updates.currentTime || currentSession.roundDuration * 60;
+          // Preservar currentTime se já existe (quando continuando após pausar)
+          // Só definir roundDuration * 60 se currentTime for 0 (início do treino)
+          if (currentSession.currentTime === 0) {
+            updates.currentTime = currentSession.roundDuration * 60;
+          }
           break;
         case "pause":
           updates.isRunning = !currentSession.isRunning;
