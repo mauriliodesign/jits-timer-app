@@ -472,16 +472,17 @@ export default function MobileControl() {
             Parar
           </SecondaryLargeButton>
 
-          {/* Resetar - Faz reset das configs do rola atual */}
+          {/* Reiniciar - Resetar tudo */}
           <SecondaryLargeButton
             onClick={() => {
-              // Reseta apenas as configurações (steppers)
-              resetOnlySteppers(setConfig, setConfigChanged);
+              handleControl("reset");
+              resetAll();
             }}
-            disabled={!currentSession}
+            disabled={!currentSession || controlMutation.isPending}
+            loading={controlMutation.isPending}
             icon={<RotateCcw />}
           >
-            Resetar
+            Reiniciar
           </SecondaryLargeButton>
         </div>
       </div>
