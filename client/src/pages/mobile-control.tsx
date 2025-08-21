@@ -221,6 +221,18 @@ export default function MobileControl() {
     }
   }, [currentSession, isInitialized]);
 
+  // Aplicar configurações automaticamente quando todas estiverem configuradas
+  useEffect(() => {
+    if (isConfigComplete() && !timerState.isRunning) {
+      // Debounce para evitar muitas chamadas
+      const timeoutId = setTimeout(() => {
+        applyConfig();
+      }, 300);
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [config, configChanged, timerState.isRunning]);
+
   // Sound effects based on timer state changes
   useEffect(() => {
     const prev = previousStateRef.current;
@@ -446,6 +458,8 @@ export default function MobileControl() {
               } else {
                 // Treino parado: Iniciar
                 if (isConfigComplete()) {
+                  // Usar configurações locais armazenadas
+                  applyConfig();
                   handleControl("start");
                 }
               }
