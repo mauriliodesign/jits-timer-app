@@ -54,7 +54,9 @@ export default function MobileControl() {
     if (value === null || value === undefined || value === '' || isNaN(value)) {
       return defaultValue;
     }
-    return Math.max(1, parseInt(value) || defaultValue);
+    const parsedValue = parseInt(value) || defaultValue;
+    // Para currentTime, permitir 0. Para outros valores, mínimo 1
+    return parsedValue;
   };
 
   // Função para determinar se o treino foi iniciado
