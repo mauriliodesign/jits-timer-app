@@ -40,7 +40,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         type: "config_update",
         data: {
           rounds: session.rounds,
-          roundDuration: session.roundDuration,
+          fightTime: session.fightTime,
           restTime: session.restTime,
         },
       });
@@ -67,9 +67,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "start":
           updates.isRunning = true;
           // Preservar currentTime se já existe (quando continuando após pausar)
-          // Só definir roundDuration * 60 se currentTime for 0 (início do treino)
+          // Só definir fightTime se currentTime for 0 (início do treino)
           if (currentSession.currentTime === 0) {
-            updates.currentTime = currentSession.roundDuration * 60;
+            updates.currentTime = currentSession.fightTime;
           }
           break;
         case "pause":
@@ -78,8 +78,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "reset":
           updates.isRunning = false;
           updates.currentRound = 1;
-          updates.currentTime = 0; // Zerar o tempo em vez de usar roundDuration
+          updates.currentTime = 0; // Zerar o tempo em vez de usar fightTime
           updates.isResting = false;
+          updates.isFinished = false;
           break;
       }
 

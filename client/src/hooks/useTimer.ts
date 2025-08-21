@@ -37,6 +37,7 @@ export const useTimer = () => {
   // WebSocket message handling
   useEffect(() => {
     const unsubscribe = websocketService.onMessage('timer_update', (message: TimerUpdateMessage) => {
+      console.log('Received timer update:', message.data);
       setTimerState(message.data);
     });
 
@@ -46,12 +47,13 @@ export const useTimer = () => {
   // Initialize timer state from current session
   useEffect(() => {
     if (currentSession) {
+      console.log('Initializing timer state from session:', currentSession);
       setTimerState({
-        currentTime: currentSession.currentTime,
-        currentRound: currentSession.currentRound,
-        totalRounds: currentSession.rounds,
-        isRunning: currentSession.isRunning,
-        isResting: currentSession.isResting,
+        currentTime: currentSession.currentTime || 0,
+        currentRound: currentSession.currentRound || 1,
+        totalRounds: currentSession.rounds || 5,
+        isRunning: currentSession.isRunning || false,
+        isResting: currentSession.isResting || false,
         isFinished: currentSession.isFinished || false,
       });
     }

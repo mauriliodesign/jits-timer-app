@@ -78,16 +78,17 @@ class TimerEngine {
           const nextRound = session.currentRound + 1;
           if (nextRound <= session.rounds) {
             updates.currentRound = nextRound;
-            updates.currentTime = session.roundDuration * 60;
+            updates.currentTime = session.fightTime;
             updates.isResting = false;
             
             // Update start time for new round
             this.startTimes.set(sessionId, Date.now());
-            this.initialTimes.set(sessionId, session.roundDuration * 60);
+            this.initialTimes.set(sessionId, session.fightTime);
           } else {
             // Training completed
             updates.isRunning = false;
             updates.isResting = false;
+            updates.isFinished = true;
             shouldStop = true;
           }
         }
@@ -108,6 +109,7 @@ class TimerEngine {
             // Training completed
             updates.isRunning = false;
             updates.isResting = false;
+            updates.isFinished = true;
             shouldStop = true;
           }
         }
@@ -122,17 +124,18 @@ class TimerEngine {
       if (broadcastMessage) {
         const updatedSession = await storage.getTimerSession(sessionId);
         if (updatedSession) {
-          broadcastMessage({
-            type: "timer_update",
-            data: {
-              currentTime: updatedSession.currentTime,
-              currentRound: updatedSession.currentRound,
-              isRunning: updatedSession.isRunning,
-              isResting: updatedSession.isResting,
-              totalRounds: updatedSession.rounds,
-              timestamp: Date.now(), // Add timestamp for client sync
-            },
-          });
+                  broadcastMessage({
+          type: "timer_update",
+          data: {
+            currentTime: updatedSession.currentTime,
+            currentRound: updatedSession.currentRound,
+            isRunning: updatedSession.isRunning,
+            isResting: updatedSession.isResting,
+            isFinished: updatedSession.isFinished || false,
+            totalRounds: updatedSession.rounds,
+            timestamp: Date.now(), // Add timestamp for client sync
+          },
+        });
         }
       }
 

@@ -6,12 +6,13 @@ import { z } from "zod";
 export const timerSessions = pgTable("timer_sessions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   rounds: integer("rounds").notNull().default(5),
-  roundDuration: integer("round_duration").notNull().default(6), // minutes
+  fightTime: integer("fight_time").notNull().default(360), // seconds (6 minutes)
   restTime: integer("rest_time").notNull().default(60), // seconds
   currentRound: integer("current_round").notNull().default(1),
   currentTime: integer("current_time").notNull().default(0), // seconds
   isRunning: boolean("is_running").notNull().default(false),
   isResting: boolean("is_resting").notNull().default(false),
+  isFinished: boolean("is_finished").notNull().default(false),
   createdAt: timestamp("created_at").default(sql`now()`),
   updatedAt: timestamp("updated_at").default(sql`now()`),
 });
@@ -34,6 +35,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
       currentRound: z.number(),
       isRunning: z.boolean(),
       isResting: z.boolean(),
+      isFinished: z.boolean(),
       totalRounds: z.number(),
     }),
   }),
@@ -41,7 +43,7 @@ export const wsMessageSchema = z.discriminatedUnion("type", [
     type: z.literal("config_update"),
     data: z.object({
       rounds: z.number(),
-      roundDuration: z.number(),
+      fightTime: z.number(),
       restTime: z.number(),
     }),
   }),

@@ -4,10 +4,16 @@ export const timeUtils = {
    * Format seconds to MM:SS format
    */
   formatTime: (seconds: number): string => {
+    // Validate input
+    if (!timeUtils.isTimeValid(seconds)) {
+      console.warn('Invalid time value:', seconds);
+      return '00:00';
+    }
+    
     if (seconds < 0) return '00:00';
     
     const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
+    const remainingSeconds = Math.floor(seconds % 60);
     
     return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
   },

@@ -123,7 +123,7 @@ export default function TVDisplay() {
 
   const totalTime = timerState.isResting ? 
     (currentSession?.restTime || 60) : 
-    ((currentSession?.roundDuration || 6) * 60);
+    (currentSession?.fightTime || 360);
   
   const progressPercentage = timeUtils.getProgressPercentage(timerState.currentTime, totalTime);
   const circumference = 2 * Math.PI * 45; // radius = 45
