@@ -433,7 +433,7 @@ export default function MobileControl() {
 
         {/* Control Buttons */}
         <div className="flex flex-col gap-3 sm:gap-4 section-spacing">
-          {/* Iniciar / Pausar - Botão com dois estados */}
+          {/* Iniciar / Pausar - Botão simplificado */}
           <PrimaryLargeButton
             onClick={() => {
               if (!currentSession) return;
@@ -444,20 +444,14 @@ export default function MobileControl() {
                 // Treino rodando: Pausar
                 handleControl("pause");
               } else {
-                // Treino parado: Iniciar/Continuar
-                if (getSafeValue(currentSession.currentTime, 0) === 0) {
-                  // Estado inicial: Iniciar Treino
-                  if (isConfigComplete()) {
-                    applyConfig();
-                    handleControl("start");
-                  }
-                } else {
-                  // Treino pausado: Continuar Treino
+                // Treino parado: Iniciar
+                if (isConfigComplete()) {
+                  applyConfig();
                   handleControl("start");
                 }
               }
             }}
-            disabled={!currentSession || (!isConfigComplete() && !isTrainingStarted()) || configMutation.isPending || controlMutation.isPending}
+            disabled={!currentSession || !isConfigComplete() || configMutation.isPending || controlMutation.isPending}
             loading={configMutation.isPending || controlMutation.isPending}
             icon={
               !currentSession ? (
@@ -474,8 +468,6 @@ export default function MobileControl() {
               "Carregando..."
             ) : getSafeValue(currentSession.isRunning, false) ? (
               "Pausar Treino"
-            ) : getSafeValue(currentSession.currentTime, 0) > 0 ? (
-              "Continuar Treino"
             ) : (
               "Iniciar Treino"
             )}
