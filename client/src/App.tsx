@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/use-auth";
 import AuthGuard from "@/components/auth-guard";
 import DevAuthGuard from "@/components/dev-auth-guard";
-import MobileControl from "@/pages/mobile-control";
+import { TimerControl } from "@/pages/TimerControl";
 import TVDisplay from "@/pages/tv-display";
 import Profile from "@/pages/profile";
 import NotFound from "@/pages/not-found";
@@ -19,17 +19,17 @@ function Router() {
     <Switch>
       <Route path="/" component={() => (
         <Guard>
-          <MobileControl />
+          <TimerControl />
         </Guard>
       )} />
       <Route path="/mobile" component={() => (
         <Guard>
-          <MobileControl />
+          <TimerControl />
         </Guard>
       )} />
       <Route path="/control" component={() => (
         <Guard>
-          <MobileControl />
+          <TimerControl />
         </Guard>
       )} />
       <Route path="/profile" component={() => (
