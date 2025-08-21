@@ -446,7 +446,6 @@ export default function MobileControl() {
               } else {
                 // Treino parado: Iniciar
                 if (isConfigComplete()) {
-                  applyConfig();
                   handleControl("start");
                 }
               }
