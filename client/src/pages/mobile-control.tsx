@@ -89,6 +89,8 @@ export default function MobileControl() {
       },
       audioInitializedRef
     );
+    // Reset do estado de inicialização para permitir nova inicialização
+    setIsInitialized(false);
   };
 
   const [timerState, setTimerState] = useState({
@@ -168,9 +170,11 @@ export default function MobileControl() {
     }
   }, [lastMessage]);
 
-  // Initialize timer state from current session
+  // Initialize timer state from current session (only on first load)
+  const [isInitialized, setIsInitialized] = useState(false);
+  
   useEffect(() => {
-    if (currentSession) {
+    if (currentSession && !isInitialized) {
       setTimerState({
         isRunning: currentSession.isRunning,
         isResting: currentSession.isResting,
@@ -185,8 +189,10 @@ export default function MobileControl() {
         roundDuration: getSafeValue(currentSession.roundDuration, 6),
         restTime: getSafeValue(currentSession.restTime, 60),
       });
+      
+      setIsInitialized(true);
     }
-  }, [currentSession]);
+  }, [currentSession, isInitialized]);
 
   // Sound effects based on timer state changes
   useEffect(() => {
