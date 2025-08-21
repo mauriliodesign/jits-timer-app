@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useWebSocket } from "@/hooks/use-websocket";
-import { formatTime, getProgressPercentage } from "@/lib/timer-utils";
+import { useWebSocket } from "@/hooks/useWebSocket";
+import { timeUtils } from "@/utils/timeUtils";
 import { 
   playStartRoundSound, 
   playEndRoundSound, 
@@ -125,7 +125,7 @@ export default function TVDisplay() {
     (currentSession?.restTime || 60) : 
     ((currentSession?.roundDuration || 6) * 60);
   
-  const progressPercentage = getProgressPercentage(timerState.currentTime, totalTime);
+  const progressPercentage = timeUtils.getProgressPercentage(timerState.currentTime, totalTime);
   const circumference = 2 * Math.PI * 45; // radius = 45
   const strokeDashoffset = circumference - (progressPercentage / 100) * circumference;
 
@@ -202,7 +202,7 @@ export default function TVDisplay() {
         {/* Main Timer Display */}
         <div className="mb-6 sm:mb-12">
           <div className="text-4xl sm:text-6xl md:text-8xl lg:text-9xl xl:text-[10rem] 2xl:text-[14.4rem] font-mono font-bold text-white mb-2 sm:mb-4 leading-none tracking-wider">
-            {formatTime(timerState.currentTime)}
+            {timeUtils.formatTime(timerState.currentTime)}
           </div>
           
           {/* Progress Bar */}
