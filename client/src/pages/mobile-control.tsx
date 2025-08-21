@@ -1,26 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Card, CardContent } from "@/components/ui/card";
 import { PrimaryLargeButton, SecondaryLargeButton } from "@/components/ui/button-system";
-import { Play, Pause, Square, Settings, Timer, Wifi, Users, RotateCcw, Monitor } from "lucide-react";
+import { Play, Pause, Square, Settings, RotateCcw, Monitor } from "lucide-react";
 import { useWebSocket } from "@/hooks/use-websocket";
-import { formatTime, calculateTotalTime } from "@/lib/timer-utils";
-import { 
-  resetSteppersToInitial,
-  resetAllToInitial,
-  resetOnlySteppers,
-  resetOnlyTimer,
-  DEFAULT_CONFIG,
-  DEFAULT_CONFIG_CHANGED,
-  DEFAULT_TIMER_STATE
-} from "@/lib/reset-utils";
-import { 
-  playStartRoundSound, 
-  playEndRoundSound, 
-  playRestStartSound, 
-  playTrainingCompleteSound,
-  enableAudio 
-} from "@/lib/sound-utils";
+import { formatTime } from "@/lib/timer-utils";
 import { apiRequest } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
@@ -30,272 +13,68 @@ import Stepper from "@/components/stepper";
 import type { TimerSession } from "@shared/schema";
 
 export default function MobileControl() {
-  // Limites de configuração
-  const CONFIG_LIMITS = {
-    rounds: { min: 1, max: 20 },
-    roundDuration: { min: 1, max: 60 },
-    restTime: { min: 5, max: 300 }
-  };
-
-  const [config, setConfig] = useState({
-    rounds: 5,
-    roundDuration: 6,
-    restTime: 60,
-  });
-
-  const [configChanged, setConfigChanged] = useState({
-    rounds: false,
-    roundDuration: false,
-    restTime: false,
-  });
-
-  // Função para garantir valores padrão e evitar valores vazios
-  const getSafeValue = (value: any, defaultValue: number) => {
-    if (value === null || value === undefined || value === '' || isNaN(value)) {
-      return defaultValue;
-    }
-    const parsedValue = parseInt(value) || defaultValue;
-    // Para currentTime, permitir 0. Para outros valores, mínimo 1
-    return parsedValue;
-  };
-
-  // Função para determinar se o treino foi iniciado
-  const isTrainingStarted = () => {
-    // Verifica apenas o timerState local, que é resetado corretamente
-    return timerState.isRunning ||
-           timerState.currentTime > 0 ||
-           timerState.currentRound > 1;
-  };
-
-  // Função para obter o tempo padrão baseado na configuração
-  const getDefaultTime = () => {
-    const roundDuration = configChanged.roundDuration ? config.roundDuration : 6;
-    return formatTime(roundDuration * 60); // Converter minutos para segundos
-  };
-
-  // Função para verificar se todos os campos estão configurados
-  const isConfigComplete = () => {
-    return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
-  };
-
-  // Função para resetar completamente a aplicação
-  const resetAll = () => {
-    // Reset imediato do estado local
-    setTimerState({
-      isRunning: false,
-      isResting: false,
-      currentRound: 1,
-      totalRounds: 5,
-      currentTime: 0,
-    });
-    
-    // Reset das configurações
-    setConfig({
-      rounds: 5,
-      roundDuration: 6,
-      restTime: 60,
-    });
-    
-    // Reset do estado de configuração
-    setConfigChanged({
-      rounds: false,
-      roundDuration: false,
-      restTime: false,
-    });
-    
-    // Reset do estado de inicialização
-    setIsInitialized(false);
-    
-    // Reset do áudio
-    if (audioInitializedRef.current) {
-      audioInitializedRef.current = false;
-    }
-    
-    // Reset no servidor
-    handleControl("reset");
-    
-    // Força atualização do currentSession após reset
-    setTimeout(() => {
-      queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
-    }, 100);
-  };
-
-  const [timerState, setTimerState] = useState({
-    isRunning: false,
-    isResting: false,
-    currentRound: 1,
-    totalRounds: 5,
-    currentTime: 0,
-  });
-
-  const previousStateRef = useRef(timerState);
-  const audioInitializedRef = useRef(false);
-
+  // Estados simples
+  const [config, setConfig] = useState({ rounds: 5, roundDuration: 6, restTime: 60 });
+  const [timerState, setTimerState] = useState({ isRunning: false, currentTime: 0, currentRound: 1, totalRounds: 5 });
+  
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { isConnected, lastMessage } = useWebSocket();
+  const { lastMessage } = useWebSocket();
 
-  const { data: currentSession, isLoading } = useQuery<TimerSession>({
+  // Query para sessão atual
+  const { data: currentSession } = useQuery<TimerSession>({
     queryKey: ["/api/timer/current"],
   });
 
+  // Mutations simples
   const configMutation = useMutation({
-    mutationFn: (newConfig: typeof config) =>
-      apiRequest("POST", "/api/timer/config", newConfig),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
-      toast({
-        title: "Configuração atualizada",
-        description: "As novas configurações foram salvas com sucesso.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Falha ao atualizar a configuração.",
-        variant: "destructive",
-      });
-    },
+    mutationFn: (newConfig: typeof config) => apiRequest("POST", "/api/timer/config", newConfig),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] }),
   });
 
   const controlMutation = useMutation({
-    mutationFn: (action: "start" | "pause" | "reset") =>
-      apiRequest("POST", "/api/timer/control", { action }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
-    },
-    onError: () => {
-      toast({
-        title: "Erro",
-        description: "Falha ao controlar o timer.",
-        variant: "destructive",
-      });
-    },
+    mutationFn: (action: "start" | "pause" | "reset") => apiRequest("POST", "/api/timer/control", { action }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] }),
   });
 
-  // Update config when WebSocket receives config updates
+  // Atualizar timer state quando receber mensagem do WebSocket
   useEffect(() => {
-    if (lastMessage?.type === "config_update") {
-      setConfig({
-        rounds: lastMessage.data.rounds,
-        roundDuration: lastMessage.data.roundDuration,
-        restTime: lastMessage.data.restTime,
-      });
-    }
-    
-    // Update timer state from WebSocket messages
     if (lastMessage?.type === "timer_update") {
-      const newState = {
+      setTimerState({
         isRunning: lastMessage.data.isRunning,
-        isResting: lastMessage.data.isResting,
+        currentTime: lastMessage.data.currentTime || 0,
         currentRound: lastMessage.data.currentRound,
         totalRounds: lastMessage.data.totalRounds,
-        currentTime: lastMessage.data.currentTime || 0,
-      };
-      
-      setTimerState(newState);
+      });
     }
   }, [lastMessage]);
 
-  // Initialize timer state from current session (only on first load)
-  const [isInitialized, setIsInitialized] = useState(false);
-  
-  useEffect(() => {
-    if (currentSession && !isInitialized) {
-      setTimerState({
-        isRunning: currentSession.isRunning,
-        isResting: currentSession.isResting,
-        currentRound: getSafeValue(currentSession.currentRound, 1),
-        totalRounds: getSafeValue(currentSession.rounds, 5),
-        currentTime: getSafeValue(currentSession.currentTime, 0),
-      });
-      
-      // Garantir que os valores da sessão são seguros
-      setConfig({
-        rounds: getSafeValue(currentSession.rounds, 5),
-        roundDuration: getSafeValue(currentSession.roundDuration, 6),
-        restTime: getSafeValue(currentSession.restTime, 60),
-      });
-      
-      setIsInitialized(true);
-    }
-  }, [currentSession, isInitialized]);
-
-  // Aplicar configurações automaticamente quando todas estiverem configuradas
-  useEffect(() => {
-    if (isConfigComplete() && !timerState.isRunning) {
-      // Debounce para evitar muitas chamadas
-      const timeoutId = setTimeout(() => {
-        applyConfig();
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
-    }
-  }, [config, configChanged, timerState.isRunning]);
-
-  // Sound effects based on timer state changes
-  useEffect(() => {
-    const prev = previousStateRef.current;
-    const curr = timerState;
-
-    // Initialize audio context on first user interaction
-    if (!audioInitializedRef.current && curr.isRunning) {
-      enableAudio();
-      audioInitializedRef.current = true;
-    }
-
-    // Detect round start (not running -> running and not resting)
-    if (!prev.isRunning && curr.isRunning && !curr.isResting) {
-      playStartRoundSound();
-    }
-
-    // Detect round end (round counter increased or time reached max)
-    if (prev.currentRound < curr.currentRound && curr.isResting) {
-      playEndRoundSound();
-    }
-
-    // Detect rest period start (not resting -> resting)
-    if (!prev.isResting && curr.isResting && curr.isRunning) {
-      playRestStartSound();
-    }
-
-    // Detect training completion (was running and reached final round)
-    if (prev.isRunning && !curr.isRunning && curr.currentRound >= curr.totalRounds) {
-      playTrainingCompleteSound();
-    }
-
-    // Update previous state reference
-    previousStateRef.current = curr;
-  }, [timerState]);
-
-  const handleConfigChange = (field: keyof typeof config, newValue: number) => {
-    const limits = CONFIG_LIMITS[field];
-    
-    // Calcular novo valor respeitando os limites
-    const clampedValue = Math.max(limits.min, Math.min(limits.max, newValue));
-    
-    const newConfig = {
-      ...config,
-      [field]: clampedValue,
-    };
-    setConfig(newConfig);
-    
-    // Marcar que este campo foi alterado
-    setConfigChanged(prev => ({
-      ...prev,
-      [field]: true,
-    }));
+  // Funções simples
+  const handleConfigChange = (field: keyof typeof config, value: number) => {
+    setConfig(prev => ({ ...prev, [field]: value }));
   };
 
-  const applyConfig = () => {
+  const handleStart = () => {
     configMutation.mutate(config);
+    controlMutation.mutate("start");
   };
 
-  const handleControl = (action: "start" | "pause" | "reset") => {
-    controlMutation.mutate(action);
+  const handlePause = () => {
+    controlMutation.mutate("pause");
   };
 
-  if (isLoading) {
+  const handleStop = () => {
+    controlMutation.mutate("reset");
+  };
+
+  const handleReset = () => {
+    setConfig({ rounds: 5, roundDuration: 6, restTime: 60 });
+    controlMutation.mutate("reset");
+  };
+
+  const isConfigComplete = () => config.rounds > 0 && config.roundDuration > 0 && config.restTime > 0;
+
+  if (!currentSession) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -309,7 +88,7 @@ export default function MobileControl() {
   return (
     <div className="app-container">
       <div className="app-content">
-        {/* Header with User Profile */}
+        {/* Header */}
         <div className="app-header">
           <div className="flex items-center">
             <svg width="138" height="15" viewBox="0 0 1381 149" fill="none" xmlns="http://www.w3.org/2000/svg" className="app-logo">
@@ -328,15 +107,14 @@ export default function MobileControl() {
           </div>
           <UserProfile />
         </div>
-        
 
-        {/* Current Status Display */}
+        {/* Status Display */}
         <div className="app-card-compact section-spacing">
           <div className="grid-status">
             <div>
               <div className="text-caption mb-1">Rola Atual</div>
               <div className="timer-display-large">
-                {isTrainingStarted() ? getSafeValue(timerState.currentRound, 1) : "—"}
+                {timerState.isRunning || timerState.currentTime > 0 ? timerState.currentRound : "—"}
               </div>
             </div>
             <div>
@@ -345,7 +123,7 @@ export default function MobileControl() {
                 size="large"
                 variant="minimal"
                 color="white"
-                initialTime={getSafeValue(timerState.currentTime, 0)}
+                initialTime={timerState.currentTime}
                 isRunning={timerState.isRunning}
                 showControls={false}
                 showLabels={false}
@@ -355,16 +133,13 @@ export default function MobileControl() {
             <div>
               <div className="text-caption mb-1">Total</div>
               <div className="timer-display-large">
-                {isTrainingStarted() 
-                  ? getSafeValue(timerState.totalRounds, 5)
-                  : "—"
-                }
+                {timerState.isRunning || timerState.currentTime > 0 ? timerState.totalRounds : "—"}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Configuration Section */}
+        {/* Configuration */}
         <div className="grid-config section-spacing">
           <div className="app-card-compact">
             <div className="flex items-center mb-3 sm:mb-4 lg:mb-6">
@@ -372,12 +147,11 @@ export default function MobileControl() {
               <h2 className="text-heading-large">Configurações</h2>
             </div>
             
-            {/* Number of Rounds */}
             <Stepper
-              value={configChanged.rounds ? config.rounds : 0}
+              value={config.rounds}
               onValueChange={(value) => handleConfigChange("rounds", value)}
-              min={CONFIG_LIMITS.rounds.min}
-              max={CONFIG_LIMITS.rounds.max}
+              min={1}
+              max={20}
               step={1}
               size="large"
               variant="minimal"
@@ -387,12 +161,11 @@ export default function MobileControl() {
               className="section-spacing-compact"
             />
 
-            {/* Round Duration */}
             <Stepper
-              value={configChanged.roundDuration ? config.roundDuration : 0}
+              value={config.roundDuration}
               onValueChange={(value) => handleConfigChange("roundDuration", value)}
-              min={CONFIG_LIMITS.roundDuration.min}
-              max={CONFIG_LIMITS.roundDuration.max}
+              min={1}
+              max={60}
               step={1}
               size="large"
               variant="minimal"
@@ -402,12 +175,11 @@ export default function MobileControl() {
               className="section-spacing-compact"
             />
 
-            {/* Rest Time */}
             <Stepper
-              value={configChanged.restTime ? config.restTime : 0}
+              value={config.restTime}
               onValueChange={(value) => handleConfigChange("restTime", value)}
-              min={CONFIG_LIMITS.restTime.min}
-              max={CONFIG_LIMITS.restTime.max}
+              min={5}
+              max={300}
               step={5}
               size="large"
               variant="minimal"
@@ -418,94 +190,39 @@ export default function MobileControl() {
             />
           </div>
 
-          {/* Total Time and Quick Actions */}
           <div className="app-card-compact">
             <div className="text-center mb-6">
-              <div className="text-heading-small mb-2">Tempo Total</div>
-              <div className="timer-display-medium">
-                {isConfigComplete() 
-                  ? calculateTotalTime(config.rounds, config.roundDuration, config.restTime)
-                  : "—"
-                }
+              <div className="text-caption mb-2">Tempo Total</div>
+              <div className="timer-display-large">
+                {isConfigComplete() ? formatTime(config.rounds * config.roundDuration * 60 + (config.rounds - 1) * config.restTime) : "—"}
               </div>
             </div>
-            
-            {/* Quick Actions */}
-            <div className="space-y-3">
-              <SecondaryLargeButton
-                onClick={() => window.open('/tv', '_blank')}
-                icon={<Monitor />}
-                fullWidth
-              >
-                Abrir Tela da TV
-              </SecondaryLargeButton>
-            </div>
+
+            <SecondaryLargeButton
+              onClick={() => window.open('/tv', '_blank')}
+              icon={<Monitor />}
+              fullWidth
+            >
+              Abrir Tela da TV
+            </SecondaryLargeButton>
           </div>
         </div>
 
         {/* Control Buttons */}
         <div className="flex flex-col gap-3 sm:gap-4 section-spacing">
-          {/* Iniciar / Pausar - Botão simplificado */}
           <PrimaryLargeButton
-            onClick={() => {
-              if (!currentSession) return;
-              
-              const isRunning = timerState.isRunning;
-              
-              if (isRunning) {
-                // Treino rodando: Pausar
-                handleControl("pause");
-              } else {
-                // Treino parado: Iniciar
-                if (isConfigComplete()) {
-                  // Usar configurações locais armazenadas
-                  applyConfig();
-                  handleControl("start");
-                }
-              }
-            }}
-            disabled={!currentSession || !isConfigComplete() || configMutation.isPending || controlMutation.isPending}
+            onClick={timerState.isRunning ? handlePause : handleStart}
+            disabled={!isConfigComplete() || configMutation.isPending || controlMutation.isPending}
             loading={configMutation.isPending || controlMutation.isPending}
-            icon={
-              !currentSession ? (
-                <Play />
-              ) : timerState.isRunning ? (
-                <Pause />
-              ) : (
-                <Play />
-              )
-            }
+            icon={timerState.isRunning ? <Pause /> : <Play />}
             fullWidth
           >
-            {!currentSession ? (
-              "Carregando..."
-            ) : timerState.isRunning ? (
-              "Pausar Treino"
-            ) : (
-              "Iniciar Treino"
-            )}
+            {timerState.isRunning ? "Pausar Treino" : "Iniciar Treino"}
           </PrimaryLargeButton>
           
-          {/* Parar - Para o rola em andamento e começa do zero com as configs atuais */}
           <SecondaryLargeButton
-            onClick={() => {
-              if (!currentSession) return;
-              
-              // Para o timer atual
-              handleControl("reset");
-              
-              // Reseta apenas o timer state (mantém configurações)
-              resetOnlyTimer(setTimerState, () => {}, audioInitializedRef);
-              
-              // Se há configuração completa, inicia imediatamente
-              if (isConfigComplete()) {
-                setTimeout(() => {
-                  applyConfig();
-                  handleControl("start");
-                }, 100);
-              }
-            }}
-            disabled={!currentSession || controlMutation.isPending}
+            onClick={handleStop}
+            disabled={controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<Square />}
             fullWidth
@@ -513,13 +230,9 @@ export default function MobileControl() {
             Parar
           </SecondaryLargeButton>
 
-          {/* Reiniciar - Resetar tudo */}
           <SecondaryLargeButton
-            onClick={() => {
-              handleControl("reset");
-              resetAll();
-            }}
-            disabled={!currentSession || controlMutation.isPending}
+            onClick={handleReset}
+            disabled={controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<RotateCcw />}
             fullWidth
