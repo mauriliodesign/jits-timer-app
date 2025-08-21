@@ -400,8 +400,8 @@ export default function MobileControl() {
         </div>
 
         {/* Control Buttons */}
-        <div className="grid-controls section-spacing">
-          {/* Main Control Button - Iniciar/Pausar/Continuar */}
+        <div className="grid grid-cols-3 gap-3 sm:gap-4 section-spacing">
+          {/* Iniciar / Pausar */}
           <PrimaryLargeButton
             onClick={() => {
               if (!currentSession) return;
@@ -434,52 +434,54 @@ export default function MobileControl() {
                 <Play />
               )
             }
-            fullWidth
           >
             {!currentSession ? (
               "Carregando..."
             ) : getSafeValue(currentSession.isRunning, false) ? (
-              "Pausar Treino"
+              "Pausar"
             ) : getSafeValue(currentSession.currentTime, 0) > 0 ? (
-              "Continuar Treino"
+              "Continuar"
             ) : (
-              "Iniciar Treino"
+              "Iniciar"
             )}
           </PrimaryLargeButton>
           
-          {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
+          {/* Parar - Para o rola em andamento e começa do zero com as configs atuais */}
           <SecondaryLargeButton
             onClick={() => {
+              if (!currentSession) return;
+              
+              // Para o timer atual
               handleControl("reset");
-              resetAll();
+              
+              // Reseta apenas o timer state (mantém configurações)
+              resetOnlyTimer(setTimerState, () => {}, audioInitializedRef);
+              
+              // Se há configuração completa, inicia imediatamente
+              if (isConfigComplete()) {
+                setTimeout(() => {
+                  applyConfig();
+                  handleControl("start");
+                }, 100);
+              }
             }}
             disabled={!currentSession || controlMutation.isPending}
             loading={controlMutation.isPending}
-            icon={<RotateCcw />}
+            icon={<Square />}
           >
-            Resetar Tudo
+            Parar
           </SecondaryLargeButton>
-        </div>
 
-        {/* Additional Reset Options */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 mt-4">
+          {/* Resetar - Faz reset das configs do rola atual */}
           <SecondaryLargeButton
-            onClick={() => resetOnlySteppers(setConfig, setConfigChanged)}
+            onClick={() => {
+              // Reseta apenas as configurações (steppers)
+              resetOnlySteppers(setConfig, setConfigChanged);
+            }}
             disabled={!currentSession}
-            size="small"
             icon={<RotateCcw />}
           >
-            Resetar Steppers
-          </SecondaryLargeButton>
-
-          <SecondaryLargeButton
-            onClick={() => resetOnlyTimer(setTimerState, () => handleControl("reset"), audioInitializedRef)}
-            disabled={!currentSession || controlMutation.isPending}
-            loading={controlMutation.isPending}
-            size="small"
-            icon={<RotateCcw />}
-          >
-            Resetar Timer
+            Resetar
           </SecondaryLargeButton>
         </div>
       </div>
