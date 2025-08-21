@@ -55,8 +55,13 @@ export default function MobileControl() {
   };
 
   const handleStart = () => {
-    configMutation.mutate(config);
-    controlMutation.mutate("start");
+    // Primeiro configura, depois inicia
+    configMutation.mutate(config, {
+      onSuccess: () => {
+        // Só inicia após configurar com sucesso
+        controlMutation.mutate("start");
+      }
+    });
   };
 
   const handlePause = () => {
