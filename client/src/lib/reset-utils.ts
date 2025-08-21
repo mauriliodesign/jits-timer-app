@@ -35,7 +35,7 @@ export const resetSteppersToInitial = (
   setConfigChanged(DEFAULT_CONFIG_CHANGED);
 };
 
-// Function to reset everything (steppers + timer + audio)
+// Function to reset everything (steppers + timer + audio + header)
 export const resetAllToInitial = (
   setConfig: (config: typeof DEFAULT_CONFIG) => void,
   setConfigChanged: (changed: typeof DEFAULT_CONFIG_CHANGED) => void,
@@ -46,7 +46,7 @@ export const resetAllToInitial = (
   // Reset steppers
   resetSteppersToInitial(setConfig, setConfigChanged);
   
-  // Reset timer state
+  // Reset timer state (this will also reset header values)
   setTimerState(DEFAULT_TIMER_STATE);
   
   // Reset audio if provided

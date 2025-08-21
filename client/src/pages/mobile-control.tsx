@@ -63,6 +63,10 @@ export default function MobileControl() {
       currentSession.isRunning || 
       getSafeValue(currentSession.currentTime, 0) > 0 ||
       getSafeValue(currentSession.currentRound, 1) > 1
+    ) && (
+      timerState.isRunning ||
+      timerState.currentTime > 0 ||
+      timerState.currentRound > 1
     );
   };
 
