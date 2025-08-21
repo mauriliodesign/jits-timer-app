@@ -400,27 +400,29 @@ export default function MobileControl() {
         </div>
 
         {/* Control Buttons */}
-        <div className="grid grid-cols-3 gap-3 sm:gap-4 section-spacing">
-          {/* Iniciar / Pausar */}
+        <div className="flex flex-col gap-3 sm:gap-4 section-spacing">
+          {/* Iniciar / Pausar - Botão com dois estados */}
           <PrimaryLargeButton
             onClick={() => {
               if (!currentSession) return;
               
-              const currentTime = getSafeValue(currentSession.currentTime, 0);
-              const isRunning = currentSession.isRunning;
+              const isRunning = getSafeValue(currentSession.isRunning, false);
               
-              if (!isRunning && currentTime === 0) {
-                // Estado inicial: Iniciar Treino
-                if (isConfigComplete()) {
-                  applyConfig();
+              if (isRunning) {
+                // Treino rodando: Pausar
+                handleControl("pause");
+              } else {
+                // Treino parado: Iniciar/Continuar
+                if (getSafeValue(currentSession.currentTime, 0) === 0) {
+                  // Estado inicial: Iniciar Treino
+                  if (isConfigComplete()) {
+                    applyConfig();
+                    handleControl("start");
+                  }
+                } else {
+                  // Treino pausado: Continuar Treino
                   handleControl("start");
                 }
-              } else if (isRunning) {
-                // Treino rodando: Pausar Treino
-                handleControl("pause");
-              } else if (!isRunning && currentTime > 0) {
-                // Treino pausado: Continuar Treino
-                handleControl("start");
               }
             }}
             disabled={!currentSession || (!isConfigComplete() && !isTrainingStarted()) || configMutation.isPending || controlMutation.isPending}
@@ -434,15 +436,16 @@ export default function MobileControl() {
                 <Play />
               )
             }
+            fullWidth
           >
             {!currentSession ? (
               "Carregando..."
             ) : getSafeValue(currentSession.isRunning, false) ? (
-              "Pausar"
+              "Pausar Treino"
             ) : getSafeValue(currentSession.currentTime, 0) > 0 ? (
-              "Continuar"
+              "Continuar Treino"
             ) : (
-              "Iniciar"
+              "Iniciar Treino"
             )}
           </PrimaryLargeButton>
           
@@ -468,6 +471,7 @@ export default function MobileControl() {
             disabled={!currentSession || controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<Square />}
+            fullWidth
           >
             Parar
           </SecondaryLargeButton>
@@ -481,6 +485,7 @@ export default function MobileControl() {
             disabled={!currentSession || controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<RotateCcw />}
+            fullWidth
           >
             Reiniciar
           </SecondaryLargeButton>
