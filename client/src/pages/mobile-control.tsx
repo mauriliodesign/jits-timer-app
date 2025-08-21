@@ -59,15 +59,10 @@ export default function MobileControl() {
 
   // Função para determinar se o treino foi iniciado
   const isTrainingStarted = () => {
-    return currentSession && (
-      currentSession.isRunning || 
-      getSafeValue(currentSession.currentTime, 0) > 0 ||
-      getSafeValue(currentSession.currentRound, 1) > 1
-    ) && (
-      timerState.isRunning ||
-      timerState.currentTime > 0 ||
-      timerState.currentRound > 1
-    );
+    // Verifica apenas o timerState local, que é resetado corretamente
+    return timerState.isRunning ||
+           timerState.currentTime > 0 ||
+           timerState.currentRound > 1;
   };
 
   // Função para obter o tempo padrão baseado na configuração
@@ -87,7 +82,11 @@ export default function MobileControl() {
       setConfig,
       setConfigChanged,
       setTimerState,
-      () => handleControl("reset"),
+      () => {
+        handleControl("reset");
+        // Força atualização do currentSession após reset
+        queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
+      },
       audioInitializedRef
     );
   };
