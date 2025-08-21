@@ -6,6 +6,14 @@ import { Play, Pause, Square, Settings, Timer, Wifi, Users, RotateCcw, Monitor }
 import { useWebSocket } from "@/hooks/use-websocket";
 import { formatTime, calculateTotalTime } from "@/lib/timer-utils";
 import { 
+  createResetFunction, 
+  createSoftResetFunction, 
+  createConfigResetFunction,
+  DEFAULT_CONFIG,
+  DEFAULT_CONFIG_CHANGED,
+  DEFAULT_TIMER_STATE
+} from "@/lib/reset-utils";
+import { 
   playStartRoundSound, 
   playEndRoundSound, 
   playRestStartSound, 
@@ -68,32 +76,29 @@ export default function MobileControl() {
     return configChanged.rounds && configChanged.roundDuration && configChanged.restTime;
   };
 
-  // Função para resetar completamente a aplicação
-  const resetAll = () => {
-    // Reset da configuração
-    setConfig({
-      rounds: 5,
-      roundDuration: 6,
-      restTime: 60,
-    });
-    setConfigChanged({
-      rounds: false,
-      roundDuration: false,
-      restTime: false,
-    });
-    
-    // Reset do timer state
-    setTimerState({
-      isRunning: false,
-      isResting: false,
-      currentRound: 1,
-      totalRounds: 5,
-      currentTime: 0,
-    });
-    
-    // Reset do audio
-    audioInitializedRef.current = false;
-  };
+  // Create reset functions using utility
+  const resetAll = createResetFunction(
+    setConfig,
+    setConfigChanged,
+    setTimerState,
+    () => {
+      handleControl("reset");
+      audioInitializedRef.current = false;
+    }
+  );
+
+  const softReset = createSoftResetFunction(
+    setTimerState,
+    () => {
+      handleControl("reset");
+      audioInitializedRef.current = false;
+    }
+  );
+
+  const resetConfig = createConfigResetFunction(
+    setConfig,
+    setConfigChanged
+  );
 
   const [timerState, setTimerState] = useState({
     isRunning: false,
@@ -452,10 +457,7 @@ export default function MobileControl() {
           
           {/* Reset Button - sempre visível, desabilitado quando não há sessão */}
           <SecondaryLargeButton
-            onClick={() => {
-              handleControl("reset");
-              resetAll();
-            }}
+            onClick={resetAll}
             disabled={!currentSession || controlMutation.isPending}
             loading={controlMutation.isPending}
             icon={<RotateCcw />}
