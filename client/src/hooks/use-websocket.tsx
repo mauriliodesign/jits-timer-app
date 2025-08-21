@@ -72,13 +72,13 @@ export function useWebSocket() {
       clearInterval(pollingInterval.current);
     }
 
-    // Poll every 500ms for timer updates (more frequent for real-time feel)
+    // Poll every 100ms for timer updates (high frequency for maximum precision)
     pollingInterval.current = setInterval(async () => {
       try {
         const response = await fetch('/api/timer/current');
         if (response.ok) {
           const session = await response.json();
-          // Simulate WebSocket message
+          // Simulate WebSocket message with timestamp
           const message: WSMessage = {
             type: "timer_update",
             data: {
@@ -87,6 +87,7 @@ export function useWebSocket() {
               isRunning: session.isRunning,
               isResting: session.isResting,
               totalRounds: session.rounds,
+              timestamp: Date.now(), // Add timestamp for sync
             },
           };
           setLastMessage(message);
@@ -96,7 +97,7 @@ export function useWebSocket() {
         console.error("Polling error:", error);
         setIsConnected(false);
       }
-    }, 2000);
+    }, 100); // Increased frequency for better precision
   };
 
   useEffect(() => {

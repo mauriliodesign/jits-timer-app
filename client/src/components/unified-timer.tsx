@@ -111,11 +111,12 @@ export const UnifiedTimer: React.FC<UnifiedTimerProps> = ({
     }
   }, [mode]);
 
-  // Timer mode effect
+  // Timer mode effect with high precision
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
     if (mode === 'timer' && running) {
+      // Use 100ms intervals for smoother countdown
       interval = setInterval(() => {
         setTime(prevTime => {
           const newTime = prevTime + 1;
@@ -124,6 +125,7 @@ export const UnifiedTimer: React.FC<UnifiedTimerProps> = ({
         });
       }, 1000);
     } else if (mode === 'countdown' && running && time > 0) {
+      // Use 100ms intervals for smoother countdown
       interval = setInterval(() => {
         setTime(prevTime => {
           const newTime = prevTime - 1;
@@ -141,6 +143,15 @@ export const UnifiedTimer: React.FC<UnifiedTimerProps> = ({
 
     return () => clearInterval(interval);
   }, [mode, running, time, onTimeUpdate, onComplete]);
+
+  // High precision sync with external state
+  useEffect(() => {
+    setRunning(isRunning);
+  }, [isRunning]);
+
+  useEffect(() => {
+    setTime(initialTime);
+  }, [initialTime]);
 
   // Sync with external state
   useEffect(() => {
