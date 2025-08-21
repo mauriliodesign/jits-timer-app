@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { PrimaryLargeButton } from "@/components/ui/button-system";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Users, LogIn, Loader2 } from "lucide-react";
 import { signInWithGoogle } from "@/lib/firebase";
@@ -56,23 +56,15 @@ export default function Login() {
             </p>
           </div>
           
-          <Button
+          <PrimaryLargeButton
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium"
+            loading={loading}
+            icon={<LogIn />}
+            fullWidth
           >
-            {loading ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Entrando...
-              </>
-            ) : (
-              <>
-                <LogIn className="mr-2 h-4 w-4" />
-                Entrar com Google
-              </>
-            )}
-          </Button>
+            Entrar com Google
+          </PrimaryLargeButton>
 
           <div className="text-center text-sm text-[#3a3a3f]">
             <p>

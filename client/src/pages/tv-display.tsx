@@ -9,8 +9,9 @@ import {
   playTrainingCompleteSound,
   enableAudio 
 } from "@/lib/sound-utils";
-import { Timer, Wifi, WifiOff, Building2, ArrowLeft } from "lucide-react";
+import { Timer, Building2, ArrowLeft } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { SecondarySmallButton } from "@/components/ui/button-system";
 import type { TimerSession, AcademyProfile } from "@shared/schema";
 
 interface TimerState {
@@ -171,13 +172,13 @@ export default function TVDisplay() {
                   second: "2-digit"
                 })}
               </p>
-              <button
+              <SecondarySmallButton
                 onClick={() => window.open('/', '_blank')}
-                className="mt-2 px-3 py-1 sm:px-4 sm:py-2 bg-white/10 hover:bg-white/20 text-white text-xs sm:text-sm rounded-lg border border-white/20 flex items-center gap-1 sm:gap-2"
+                icon={<ArrowLeft />}
+                className="mt-2"
               >
-                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
                 Voltar para Controle
-              </button>
+              </SecondarySmallButton>
             </div>
           </div>
         </div>
@@ -189,22 +190,7 @@ export default function TVDisplay() {
       <div className="flex-1 flex flex-col justify-center items-center px-4 sm:px-8">
 
         <div className="text-center max-w-4xl mx-auto w-full">
-        {/* Connection Status */}
-        <div className="mb-2 sm:mb-4 flex justify-center">
-          <div className="flex items-center text-sm sm:text-lg text-[#5a5a60]">
-            {isConnected ? (
-              <>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-[#59FF3A] mr-2 sm:mr-3 animate-pulse"></div>
-                <span>Conectado</span>
-              </>
-            ) : (
-              <>
-                <div className="w-2 h-2 sm:w-3 sm:h-3 rounded-full bg-red-500 mr-2 sm:mr-3"></div>
-                <span>Desconectado</span>
-              </>
-            )}
-          </div>
-        </div>
+
 
         {/* Status Message */}
         <div className="mb-4 sm:mb-8">

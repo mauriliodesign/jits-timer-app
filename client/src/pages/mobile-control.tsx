@@ -464,30 +464,7 @@ export default function MobileControl() {
           </SecondaryLargeButton>
         </div>
 
-        {/* Clock Display */}
-        <div className="section-spacing">
-          <UnifiedTimer
-            mode="clock"
-            size="large"
-            variant="card"
-            color="white"
-            showControls={false}
-            showLabels={true}
-            customLabels={{
-              hours: "Hora",
-              minutes: "Min",
-              seconds: "Seg"
-            }}
-          />
-        </div>
 
-        {/* Connection Status */}
-        <div className="text-center">
-          <div className="inline-flex items-center text-caption text-[#5a5a60]">
-            <div className={`w-2 h-2 rounded-full mr-2 ${isConnected ? "bg-[#59FF3A] animate-pulse" : "bg-red-500"}`}></div>
-            {isConnected ? "Conectado" : "Desconectado"}
-          </div>
-        </div>
       </div>
     </div>
   );

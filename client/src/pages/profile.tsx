@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { PrimaryLargeButton, SecondaryLargeButton } from "@/components/ui/button-system";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -107,7 +107,7 @@ export default function Profile() {
         <div className="text-center">
           <p className="text-xl">Você precisa estar logado para acessar o perfil.</p>
           <Link href="/login">
-            <Button className="mt-4">Fazer Login</Button>
+                          <PrimaryLargeButton className="mt-4">Fazer Login</PrimaryLargeButton>
           </Link>
         </div>
       </div>
@@ -131,10 +131,9 @@ export default function Profile() {
         {/* Header */}
         <div className="flex items-center mb-4 sm:mb-6">
           <Link href="/control">
-            <Button variant="outline" size="sm" className="mr-3 sm:mr-4 bg-[#1e1e21] border-[#59FF3A] hover:bg-[#59FF3A] hover:text-[#121214] text-[#59FF3A]">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+            <SecondaryLargeButton size="small" className="mr-3 sm:mr-4" icon={<ArrowLeft />}>
               Voltar
-            </Button>
+            </SecondaryLargeButton>
           </Link>
           <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">Configurações</h1>
         </div>
@@ -212,25 +211,15 @@ export default function Profile() {
               </div>
 
               {/* Submit Button */}
-              <Button
+              <PrimaryLargeButton
                 type="submit"
                 disabled={createProfileMutation.isPending || updateProfileMutation.isPending}
-                className="w-full h-11 sm:h-12 bg-[#59FF3A] hover:bg-[#4DEB2E] text-[#121214] text-sm sm:text-base"
+                loading={createProfileMutation.isPending || updateProfileMutation.isPending}
+                icon={profile ? <Trophy /> : <User />}
+                fullWidth
               >
-                {createProfileMutation.isPending || updateProfileMutation.isPending ? (
-                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2"></div>
-                ) : profile ? (
-                  <>
-                    <Trophy className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Atualizar Perfil
-                  </>
-                ) : (
-                  <>
-                    <User className="mr-2 h-4 w-4 sm:h-5 sm:w-5" />
-                    Criar Perfil
-                  </>
-                )}
-              </Button>
+                {profile ? "Atualizar Perfil" : "Criar Perfil"}
+              </PrimaryLargeButton>
             </CardContent>
           </Card>
         </form>
@@ -245,58 +234,54 @@ export default function Profile() {
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-                <Button
+                <SecondaryLargeButton
                   onClick={() => {
                     enableAudio();
                     playStartRoundSound();
                   }}
-                  variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
+                  className="h-14 sm:h-16"
                 >
                   <div className="text-center">
                     <div className="text-base sm:text-lg mb-1">🔊</div>
                     <div className="text-xs sm:text-sm">Início de Round</div>
                   </div>
-                </Button>
-                <Button
+                </SecondaryLargeButton>
+                <SecondaryLargeButton
                   onClick={() => {
                     enableAudio();
                     playEndRoundSound();
                   }}
-                  variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
+                  className="h-14 sm:h-16"
                 >
                   <div className="text-center">
                     <div className="text-base sm:text-lg mb-1">🔊</div>
                     <div className="text-xs sm:text-sm">Fim de Round</div>
                   </div>
-                </Button>
-                <Button
+                </SecondaryLargeButton>
+                <SecondaryLargeButton
                   onClick={() => {
                     enableAudio();
                     playRestStartSound();
                   }}
-                  variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
+                  className="h-14 sm:h-16"
                 >
                   <div className="text-center">
                     <div className="text-base sm:text-lg mb-1">🔊</div>
                     <div className="text-xs sm:text-sm">Início de Descanso</div>
                   </div>
-                </Button>
-                <Button
+                </SecondaryLargeButton>
+                <SecondaryLargeButton
                   onClick={() => {
                     enableAudio();
                     playTrainingCompleteSound();
                   }}
-                  variant="outline"
-                  className="bg-[#1e1e21] border-[#252529] hover:bg-[#252529] text-white h-14 sm:h-16"
+                  className="h-14 sm:h-16"
                 >
                   <div className="text-center">
                     <div className="text-base sm:text-lg mb-1">🔊</div>
                     <div className="text-xs sm:text-sm">Conclusão do Treino</div>
                   </div>
-                </Button>
+                </SecondaryLargeButton>
               </div>
             </CardContent>
           </Card>
