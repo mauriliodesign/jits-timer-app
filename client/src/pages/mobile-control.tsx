@@ -438,7 +438,7 @@ export default function MobileControl() {
             onClick={() => {
               if (!currentSession) return;
               
-              const isRunning = getSafeValue(currentSession.isRunning, false);
+              const isRunning = timerState.isRunning;
               
               if (isRunning) {
                 // Treino rodando: Pausar
@@ -455,7 +455,7 @@ export default function MobileControl() {
             icon={
               !currentSession ? (
                 <Play />
-              ) : getSafeValue(currentSession.isRunning, false) ? (
+              ) : timerState.isRunning ? (
                 <Pause />
               ) : (
                 <Play />
@@ -465,7 +465,7 @@ export default function MobileControl() {
           >
             {!currentSession ? (
               "Carregando..."
-            ) : getSafeValue(currentSession.isRunning, false) ? (
+            ) : timerState.isRunning ? (
               "Pausar Treino"
             ) : (
               "Iniciar Treino"
