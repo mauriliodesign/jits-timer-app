@@ -74,7 +74,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         case "reset":
           updates.isRunning = false;
           updates.currentRound = 1;
-          updates.currentTime = currentSession.roundDuration * 60;
+          updates.currentTime = 0; // Zerar o tempo em vez de usar roundDuration
           updates.isResting = false;
           break;
       }

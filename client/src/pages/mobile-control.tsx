@@ -78,19 +78,44 @@ export default function MobileControl() {
 
   // Função para resetar completamente a aplicação
   const resetAll = () => {
-    resetAllToInitial(
-      setConfig,
-      setConfigChanged,
-      setTimerState,
-      () => {
-        handleControl("reset");
-        // Força atualização do currentSession após reset
-        queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
-      },
-      audioInitializedRef
-    );
-    // Reset do estado de inicialização para permitir nova inicialização
+    // Reset imediato do estado local
+    setTimerState({
+      isRunning: false,
+      isResting: false,
+      currentRound: 1,
+      totalRounds: 5,
+      currentTime: 0,
+    });
+    
+    // Reset das configurações
+    setConfig({
+      rounds: 5,
+      roundDuration: 6,
+      restTime: 60,
+    });
+    
+    // Reset do estado de configuração
+    setConfigChanged({
+      rounds: false,
+      roundDuration: false,
+      restTime: false,
+    });
+    
+    // Reset do estado de inicialização
     setIsInitialized(false);
+    
+    // Reset do áudio
+    if (audioInitializedRef.current) {
+      audioInitializedRef.current = false;
+    }
+    
+    // Reset no servidor
+    handleControl("reset");
+    
+    // Força atualização do currentSession após reset
+    setTimeout(() => {
+      queryClient.invalidateQueries({ queryKey: ["/api/timer/current"] });
+    }, 100);
   };
 
   const [timerState, setTimerState] = useState({
